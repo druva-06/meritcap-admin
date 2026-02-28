@@ -656,7 +656,7 @@ export default function DesignPage() {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Create Your Future?</h2>
             <p className="text-xl text-pink-100 mb-8 leading-relaxed">
-              Join thousands of successful designers who chose WowCap for their creative education journey. Get expert
+              Join thousands of successful designers who chose MeritCap for their creative education journey. Get expert
               guidance, college selection support, and career counseling.
             </p>
 

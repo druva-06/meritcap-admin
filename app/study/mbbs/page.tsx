@@ -1193,7 +1193,7 @@ export default function StudyMBBSPage() {
                 <h3 className="text-lg font-bold mb-2">Dr. Priya Sharma</h3>
                 <p className="text-sm text-gray-600 mb-3">MBBS from Russia • Now practicing in Mumbai</p>
                 <p className="text-sm text-gray-700 italic">
-                  "WowCap made my dream of becoming a doctor come true. The guidance was exceptional throughout my
+                  "MeritCap made my dream of becoming a doctor come true. The guidance was exceptional throughout my
                   journey."
                 </p>
               </CardContent>

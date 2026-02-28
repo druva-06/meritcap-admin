@@ -470,4 +470,4 @@ Please report security issues to security@meritcap.com with:
 
 **Document Classification**: Internal Use Only  
 **Next Review Date**: 2024-06-01  
-**Owner**: WowCap Security Team
+**Owner**: MeritCap Security Team

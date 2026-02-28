@@ -653,7 +653,7 @@ export default function ComputerSciencePage() {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Code Your Future?</h2>
             <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-              Join thousands of successful software engineers who chose WowCap for their computer science education
+              Join thousands of successful software engineers who chose MeritCap for their computer science education
               journey. Get expert guidance, college selection support, and career counseling.
             </p>
 

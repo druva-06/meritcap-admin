@@ -400,11 +400,11 @@ export default function StudyAustraliaPage() {
         </div>
       </section>
 
-      {/* Why Choose WowCap Section */}
+      {/* Why Choose MeritCap Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose WowCap?</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose MeritCap?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Your end-to-end partner for studying in Australia with personalized guidance and proven success
             </p>
@@ -558,7 +558,7 @@ export default function StudyAustraliaPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Success Stories from Australia</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Hear from students who made their Australian dream come true with WowCap's guidance
+              Hear from students who made their Australian dream come true with MeritCap's guidance
             </p>
           </div>
 
@@ -580,7 +580,7 @@ export default function StudyAustraliaPage() {
                   </div>
                 </div>
                 <blockquote className="text-lg text-gray-700 italic mb-6">
-                  "WowCap made my Melbourne dream a reality. From university selection to visa approval, their
+                  "MeritCap made my Melbourne dream a reality. From university selection to visa approval, their
                   AI-powered matching and expert guidance were incredible. Now I'm working at Atlassian with a AUD 120K
                   package and living my best life in Australia!"
                 </blockquote>
@@ -625,7 +625,7 @@ export default function StudyAustraliaPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Start Your Australia Journey?</h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of successful students who chose WowCap for their Australian dream. Get personalized guidance
+            Join thousands of successful students who chose MeritCap for their Australian dream. Get personalized guidance
             from our expert counselors today.
           </p>
 
@@ -640,7 +640,7 @@ export default function StudyAustraliaPage() {
               className="border-white text-white hover:bg-white hover:text-blue-900 px-8 bg-transparent"
             >
               <Phone className="w-5 h-5 mr-2" />
-              Call +61-800-WOWCAP
+              Call +61-800-MERITCAP
             </Button>
             <Button
               size="lg"

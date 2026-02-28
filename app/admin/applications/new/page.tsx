@@ -42,7 +42,7 @@ export default function CreateApplicationPage() {
     // Step 4: Commission & Payment
     collegeCommission: "",
     subAgentCommission: "",
-    wowcapRevenue: "",
+    meritcapRevenue: "",
     paymentTerms: "",
   })
 
@@ -553,12 +553,12 @@ export default function CreateApplicationPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="wowcapRevenue">WowCap Revenue</Label>
+                  <Label htmlFor="meritcapRevenue">MeritCap Revenue</Label>
                   <Input
-                    id="wowcapRevenue"
+                    id="meritcapRevenue"
                     placeholder="$3,500"
-                    value={formData.wowcapRevenue}
-                    onChange={(e) => setFormData({ ...formData, wowcapRevenue: e.target.value })}
+                    value={formData.meritcapRevenue}
+                    onChange={(e) => setFormData({ ...formData, meritcapRevenue: e.target.value })}
                   />
                 </div>
               </div>
@@ -589,7 +589,7 @@ export default function CreateApplicationPage() {
                     {(
                       Number.parseFloat(formData.collegeCommission || "0") +
                       Number.parseFloat(formData.subAgentCommission || "0") +
-                      Number.parseFloat(formData.wowcapRevenue || "0")
+                      Number.parseFloat(formData.meritcapRevenue || "0")
                     ).toFixed(2)}
                   </span>
                 </div>

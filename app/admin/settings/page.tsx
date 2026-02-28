@@ -364,7 +364,7 @@ export default function SettingsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="company-name">Company Name</Label>
-                  <Input id="company-name" defaultValue="WowCap Education" />
+                  <Input id="company-name" defaultValue="MeritCap Education" />
                 </div>
                 <div>
                   <Label htmlFor="company-email">Company Email</Label>

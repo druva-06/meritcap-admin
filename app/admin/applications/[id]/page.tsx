@@ -74,7 +74,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
     commission: {
       collegeCommission: "$5,000",
       subAgentCommission: "$1,500",
-      wowcapRevenue: "$3,500",
+      meritcapRevenue: "$3,500",
       totalCommission: "$5,000",
       commissionStatus: "Pending",
       paymentTerms: "After enrollment confirmation",
@@ -822,8 +822,8 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
                   <p className="text-2xl font-bold text-purple-600">{application.commission.subAgentCommission}</p>
                 </div>
                 <div className="p-4 bg-green-50 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">WowCap Revenue</p>
-                  <p className="text-2xl font-bold text-green-600">{application.commission.wowcapRevenue}</p>
+                  <p className="text-sm text-gray-600 mb-1">MeritCap Revenue</p>
+                  <p className="text-2xl font-bold text-green-600">{application.commission.meritcapRevenue}</p>
                 </div>
                 <div className="p-4 bg-orange-50 rounded-lg">
                   <p className="text-sm text-gray-600 mb-1">Total Commission</p>

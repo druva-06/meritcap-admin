@@ -163,11 +163,11 @@ export default function AboutPage() {
   ]
 
   const socialLinks = [
-    { icon: Youtube, label: "YouTube", href: "https://youtube.com/@wowcap", color: "text-red-600" },
-    { icon: Facebook, label: "Facebook", href: "https://facebook.com/wowcap", color: "text-blue-600" },
-    { icon: Twitter, label: "Twitter", href: "https://twitter.com/wowcap", color: "text-blue-400" },
-    { icon: Instagram, label: "Instagram", href: "https://instagram.com/wowcap", color: "text-pink-600" },
-    { icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com/company/wowcap", color: "text-blue-700" },
+    { icon: Youtube, label: "YouTube", href: "https://youtube.com/@meritcap", color: "text-red-600" },
+    { icon: Facebook, label: "Facebook", href: "https://facebook.com/meritcap", color: "text-blue-600" },
+    { icon: Twitter, label: "Twitter", href: "https://twitter.com/meritcap", color: "text-blue-400" },
+    { icon: Instagram, label: "Instagram", href: "https://instagram.com/meritcap", color: "text-pink-600" },
+    { icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com/company/meritcap", color: "text-blue-700" },
   ]
 
   return (
@@ -328,7 +328,7 @@ export default function AboutPage() {
       <section className="py-20 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Why Choose WowCap?</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Why Choose MeritCap?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               We're not just another education consultancy. Here's what sets us apart in the industry.
             </p>

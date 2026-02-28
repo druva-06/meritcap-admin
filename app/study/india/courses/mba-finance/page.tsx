@@ -766,7 +766,7 @@ export default function MBAFinancePage() {
                 previousRole: "Accountant",
                 salaryJump: "₹5L → ₹45L",
                 story:
-                  "WowCap's guidance helped me transition from traditional accounting to strategic finance leadership at India's top e-commerce company.",
+                  "MeritCap's guidance helped me transition from traditional accounting to strategic finance leadership at India's top e-commerce company.",
                 image: "/placeholder.svg?height=100&width=100&text=PA",
               },
               {
@@ -822,7 +822,7 @@ export default function MBAFinancePage() {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Master Finance?</h2>
             <p className="text-xl text-green-100 mb-8 leading-relaxed">
-              Join thousands of successful finance professionals who chose WowCap for their MBA Finance journey. Get
+              Join thousands of successful finance professionals who chose MeritCap for their MBA Finance journey. Get
               expert guidance, college selection support, and specialized finance career counseling.
             </p>
 

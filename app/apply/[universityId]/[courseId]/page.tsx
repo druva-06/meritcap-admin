@@ -256,9 +256,9 @@ export default function ApplicationPage({ params }: { params: { universityId: st
       }
 
       // Save to localStorage for future use
-      localStorage.setItem("wowcap_application_data", JSON.stringify(applicationData))
+      localStorage.setItem("meritcap_application_data", JSON.stringify(applicationData))
       localStorage.setItem(
-        "wowcap_user",
+        "meritcap_user",
         JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -309,9 +309,9 @@ export default function ApplicationPage({ params }: { params: { universityId: st
         setCourse(foundCourse)
 
         // Load user data from multiple sources and auto-fill form
-        const user = localStorage.getItem("wowcap_user")
-        const leadData = localStorage.getItem("wowcap_lead_data")
-        const applicationData = localStorage.getItem("wowcap_application_data")
+        const user = localStorage.getItem("meritcap_user")
+        const leadData = localStorage.getItem("meritcap_lead_data")
+        const applicationData = localStorage.getItem("meritcap_application_data")
 
         if (user || leadData || applicationData) {
           const parsedUser = user ? JSON.parse(user) : null

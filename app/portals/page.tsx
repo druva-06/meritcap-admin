@@ -106,7 +106,7 @@ export default function PortalsPage() {
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
               <Globe className="w-8 h-8 text-blue-600 mr-3" />
-              <h1 className="text-4xl font-bold text-gray-900">WowCap Portal Access</h1>
+              <h1 className="text-4xl font-bold text-gray-900">MeritCap Portal Access</h1>
             </div>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Access different portals based on your role. Each portal is designed for specific user types with tailored

@@ -136,7 +136,7 @@ export default function ViewProfilePage() {
     timeline: [
       {
         date: "2024-01-15",
-        title: "Joined WowCap",
+        title: "Joined MeritCap",
         description: "Started your study abroad journey",
         status: "completed",
       },

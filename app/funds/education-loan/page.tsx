@@ -68,7 +68,7 @@ export default function EducationLoanPage() {
     {
       name: "Priya Sharma",
       photo: "/placeholder.svg?height=80&width=80",
-      quote: "WOWCap helped me secure a ₹25 lakh loan for my MS in Canada. The process was so smooth!",
+      quote: "MeritCap helped me secure a ₹25 lakh loan for my MS in Canada. The process was so smooth!",
       details: "Canada • ₹25 Lakhs • SBI",
       rating: 5,
     },
@@ -82,7 +82,7 @@ export default function EducationLoanPage() {
     {
       name: "Ananya Singh",
       photo: "/placeholder.svg?height=80&width=80",
-      quote: "No collateral needed for my ₹15 lakh loan. WOWCap made it possible!",
+      quote: "No collateral needed for my ₹15 lakh loan. MeritCap made it possible!",
       details: "UK • ₹15 Lakhs • Axis Bank",
       rating: 5,
     },
@@ -154,7 +154,7 @@ export default function EducationLoanPage() {
           </h1>
 
           <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto">
-            WOWCap is partnered with 24+ banks to get you the best deal
+            MeritCap is partnered with 24+ banks to get you the best deal
           </p>
 
           {/* Money Funnel Animation */}

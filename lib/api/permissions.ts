@@ -179,7 +179,7 @@ export async function getUserPermissions(userId: number): Promise<UserPermission
  */
 export async function getCurrentUserPermissions(): Promise<UserPermissionsResponseDto> {
   // Get user ID from storage
-  const userStr = localStorage.getItem("wowcap_user") || sessionStorage.getItem("wowcap_user")
+  const userStr = localStorage.getItem("meritcap_user") || sessionStorage.getItem("meritcap_user")
   if (!userStr) {
     throw new Error("No user logged in")
   }

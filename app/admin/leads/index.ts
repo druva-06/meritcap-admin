@@ -27,7 +27,7 @@
  * 4. Response validated and state updated
  * 5. UI re-renders with new data
  * 
- * @author WowCap Development Team
+ * @author MeritCap Development Team
  * @license Proprietary
  */
 

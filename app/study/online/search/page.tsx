@@ -71,7 +71,7 @@ function StudyOnlineSearchContent() {
   const [authLoading, setAuthLoading] = useState(true)
 
   useEffect(() => {
-    const user = localStorage.getItem("wowcap_user")
+    const user = localStorage.getItem("meritcap_user")
     if (user) {
       const parsedUser = JSON.parse(user) as UnifiedUserProfile
       setIsLoggedIn(true)
@@ -82,23 +82,23 @@ function StudyOnlineSearchContent() {
       setShowLoginModal(true)
     }
 
-    const savedFavorites = localStorage.getItem("wowcap_favorites")
+    const savedFavorites = localStorage.getItem("meritcap_favorites")
     if (savedFavorites) {
       setFavorites(JSON.parse(savedFavorites))
     }
 
-    const savedComparison = localStorage.getItem("wowcap_comparison")
+    const savedComparison = localStorage.getItem("meritcap_comparison")
     if (savedComparison) {
       setComparisonList(JSON.parse(savedComparison))
     }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem("wowcap_favorites", JSON.stringify(favorites))
+    localStorage.setItem("meritcap_favorites", JSON.stringify(favorites))
   }, [favorites])
 
   useEffect(() => {
-    localStorage.setItem("wowcap_comparison", JSON.stringify(comparisonList))
+    localStorage.setItem("meritcap_comparison", JSON.stringify(comparisonList))
   }, [comparisonList])
 
   const handleLoginComplete = (newUserData: UnifiedUserProfile) => {
@@ -106,7 +106,7 @@ function StudyOnlineSearchContent() {
     setUserData(newUserData)
     setShowLoginModal(false)
 
-    localStorage.setItem("wowcap_user", JSON.stringify(newUserData))
+    localStorage.setItem("meritcap_user", JSON.stringify(newUserData))
     window.dispatchEvent(new Event("authStateChanged"))
 
     if (!newUserData.profileCompleted) {

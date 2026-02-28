@@ -103,7 +103,7 @@ export function FilterSidebar({ onFilterChange, vertical }: FilterSidebarProps) 
 
   useEffect(() => {
     // Check user login status and tier
-    const user = localStorage.getItem("wowcap_user")
+    const user = localStorage.getItem("meritcap_user")
     if (user) {
       setIsLoggedIn(true)
       const userData = JSON.parse(user)

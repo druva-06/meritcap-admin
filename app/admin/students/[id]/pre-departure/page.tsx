@@ -149,7 +149,7 @@ export default function PreDeparturePage({ params }: { params: { id: string } })
       ],
     },
     {
-      category: "WowCap Support",
+      category: "MeritCap Support",
       contacts: [
         { name: "Amit Kumar (Counselor)", phone: "+91 98765 43210", email: "amit@meritcap.com" },
         { name: "24/7 Support Helpline", phone: "+91 22 1234 5678", email: "support@meritcap.com" },

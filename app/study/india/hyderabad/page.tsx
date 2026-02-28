@@ -653,11 +653,11 @@ export default function StudyHyderabadPage() {
         </div>
       </section>
 
-      {/* Why Choose WowCap Section */}
+      {/* Why Choose MeritCap Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose WowCap?</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose MeritCap?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Your end-to-end partner for studying in Hyderabad with personalized guidance and proven success
             </p>
@@ -810,7 +810,7 @@ export default function StudyHyderabadPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Success Stories from Hyderabad</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Hear from students who made their dreams come true with WowCap's guidance in Hyderabad
+              Hear from students who made their dreams come true with MeritCap's guidance in Hyderabad
             </p>
           </div>
 
@@ -831,7 +831,7 @@ export default function StudyHyderabadPage() {
                   </div>
                 </div>
                 <blockquote className="text-lg text-gray-700 italic mb-6">
-                  "WowCap made my NIPER dream a reality. From college selection to entrance exam preparation, their
+                  "MeritCap made my NIPER dream a reality. From college selection to entrance exam preparation, their
                   AI-powered matching and expert guidance were incredible. Now I'm working at Dr. Reddy's with a ₹25L
                   package and contributing to global healthcare!"
                 </blockquote>
@@ -885,7 +885,7 @@ export default function StudyHyderabadPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "From Warangal to IIT Hyderabad! WowCap's counselors helped me navigate the complex JEE process. Now
+                  "From Warangal to IIT Hyderabad! MeritCap's counselors helped me navigate the complex JEE process. Now
                   I'm at Google with ₹42L package."
                 </p>
                 <div className="flex items-center justify-between">
@@ -915,7 +915,7 @@ export default function StudyHyderabadPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "WowCap's ISB guidance was spot-on! Got into ISB with their expert GMAT prep recommendations. Their
+                  "MeritCap's ISB guidance was spot-on! Got into ISB with their expert GMAT prep recommendations. Their
                   support made all the difference."
                 </p>
                 <div className="flex items-center justify-between">
@@ -945,7 +945,7 @@ export default function StudyHyderabadPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "Working at Supreme Court now! WowCap connected me with the right program at NALSAR and helped secure
+                  "Working at Supreme Court now! MeritCap connected me with the right program at NALSAR and helped secure
                   my dream legal career."
                 </p>
                 <div className="flex items-center justify-between">
@@ -975,7 +975,7 @@ export default function StudyHyderabadPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "Started my own AI startup! WowCap's network and guidance were invaluable for my entrepreneurial
+                  "Started my own AI startup! MeritCap's network and guidance were invaluable for my entrepreneurial
                   journey from IIIT Hyderabad."
                 </p>
                 <div className="flex items-center justify-between">
@@ -999,7 +999,7 @@ export default function StudyHyderabadPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Start Your Hyderabad Journey?</h2>
           <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of successful students who chose WowCap for their Hyderabad education dream. Get personalized
+            Join thousands of successful students who chose MeritCap for their Hyderabad education dream. Get personalized
             guidance from our expert counselors today.
           </p>
 
@@ -1014,7 +1014,7 @@ export default function StudyHyderabadPage() {
               className="border-white text-white hover:bg-white hover:text-purple-900 px-8 bg-transparent"
             >
               <Phone className="w-5 h-5 mr-2" />
-              Call +91-40-WOWCAP
+              Call +91-40-MERITCAP
             </Button>
             <Button
               size="lg"

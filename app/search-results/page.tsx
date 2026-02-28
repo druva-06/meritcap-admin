@@ -74,7 +74,7 @@ function SearchResultsContent() {
 
   useEffect(() => {
     console.log("[v0] SearchResults: Auth check starting")
-    const user = localStorage.getItem("wowcap_user")
+    const user = localStorage.getItem("meritcap_user")
     if (user) {
       try {
         const parsedUser = JSON.parse(user) as UnifiedUserProfile
@@ -84,7 +84,7 @@ function SearchResultsContent() {
         console.log("[v0] SearchResults: User found, logged in")
       } catch (error) {
         console.error("[v0] SearchResults: Error parsing user data", error)
-        localStorage.removeItem("wowcap_user")
+        localStorage.removeItem("meritcap_user")
         setAuthLoading(false)
         setShowLoginModal(true)
       }
@@ -94,33 +94,33 @@ function SearchResultsContent() {
       console.log("[v0] SearchResults: No user found, showing login modal")
     }
 
-    const savedFavorites = localStorage.getItem("wowcap_favorites")
+    const savedFavorites = localStorage.getItem("meritcap_favorites")
     if (savedFavorites) {
       try {
         setFavorites(JSON.parse(savedFavorites))
       } catch (error) {
         console.error("[v0] SearchResults: Error parsing favorites", error)
-        localStorage.removeItem("wowcap_favorites")
+        localStorage.removeItem("meritcap_favorites")
       }
     }
 
-    const savedComparison = localStorage.getItem("wowcap_comparison")
+    const savedComparison = localStorage.getItem("meritcap_comparison")
     if (savedComparison) {
       try {
         setComparisonList(JSON.parse(savedComparison))
       } catch (error) {
         console.error("[v0] SearchResults: Error parsing comparison list", error)
-        localStorage.removeItem("wowcap_comparison")
+        localStorage.removeItem("meritcap_comparison")
       }
     }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem("wowcap_favorites", JSON.stringify(favorites))
+    localStorage.setItem("meritcap_favorites", JSON.stringify(favorites))
   }, [favorites])
 
   useEffect(() => {
-    localStorage.setItem("wowcap_comparison", JSON.stringify(comparisonList))
+    localStorage.setItem("meritcap_comparison", JSON.stringify(comparisonList))
   }, [comparisonList])
 
   const handleLoginComplete = (newUserData: UnifiedUserProfile) => {
@@ -129,7 +129,7 @@ function SearchResultsContent() {
     setShowLoginModal(false)
 
     // Force re-render by updating localStorage immediately
-    localStorage.setItem("wowcap_user", JSON.stringify(newUserData))
+    localStorage.setItem("meritcap_user", JSON.stringify(newUserData))
 
     window.dispatchEvent(new Event("authStateChanged"))
 

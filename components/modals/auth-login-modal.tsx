@@ -62,7 +62,7 @@ export function AuthLoginModal({ isOpen, onClose, onLoginComplete }: AuthLoginMo
         isNewUser: true,
       }
 
-      localStorage.setItem("wowcap_user", JSON.stringify(userData))
+      localStorage.setItem("meritcap_user", JSON.stringify(userData))
       onLoginComplete(userData)
       setLoading(false)
     }, 1500)
@@ -82,7 +82,7 @@ export function AuthLoginModal({ isOpen, onClose, onLoginComplete }: AuthLoginMo
         avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
       }
 
-      localStorage.setItem("wowcap_user", JSON.stringify(userData))
+      localStorage.setItem("meritcap_user", JSON.stringify(userData))
       onLoginComplete(userData)
       setLoading(false)
     }, 2000)

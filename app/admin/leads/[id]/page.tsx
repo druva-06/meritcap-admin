@@ -369,12 +369,12 @@ export default function LeadDetailPage({ params }: { params: { id: string } }) {
     },
     {
       id: 2,
-      subject: "Welcome to WowCap - Your Study Abroad Journey Begins",
-      from: "WowCap Team",
+      subject: "Welcome to MeritCap - Your Study Abroad Journey Begins",
+      from: "MeritCap Team",
       to: "Priya Sharma",
       date: "2024-01-15 02:00 PM",
       status: "Sent",
-      preview: "Dear Priya, Thank you for choosing WowCap for your study abroad journey...",
+      preview: "Dear Priya, Thank you for choosing MeritCap for your study abroad journey...",
     },
   ]
 

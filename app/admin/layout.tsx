@@ -216,7 +216,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
               <span className="text-2xl">🎓</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold">WowCap</h1>
+              <h1 className="text-xl font-bold">MeritCap</h1>
               <p className="text-blue-100 text-xs">Admin Portal</p>
             </div>
           </Link>

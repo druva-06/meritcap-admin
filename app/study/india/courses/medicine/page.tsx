@@ -648,7 +648,7 @@ export default function MedicinePage() {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Heal the World?</h2>
             <p className="text-xl text-red-100 mb-8 leading-relaxed">
-              Join thousands of successful doctors who chose WowCap for their medical education journey. Get expert
+              Join thousands of successful doctors who chose MeritCap for their medical education journey. Get expert
               guidance, college selection support, and career counseling.
             </p>
 

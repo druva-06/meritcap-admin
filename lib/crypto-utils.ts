@@ -3,7 +3,7 @@
  * Uses Base64 encoding with a simple XOR cipher for basic obfuscation
  */
 
-const ENCRYPTION_KEY = "WOWCAP_SECURE_KEY_2025"; // In production, use environment variable
+const ENCRYPTION_KEY = "MERITCAP_SECURE_KEY_2025"; // In production, use environment variable
 
 /**
  * Encrypts a string using XOR cipher and Base64 encoding

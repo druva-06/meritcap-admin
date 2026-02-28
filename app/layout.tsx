@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "WowCap - Your Educational Journey Partner",
+  title: "MeritCap - Your Educational Journey Partner",
   description: "Comprehensive guidance for study abroad, education loans, and career development",
   generator: 'v0.app'
 }

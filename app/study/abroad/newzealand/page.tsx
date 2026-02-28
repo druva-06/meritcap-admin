@@ -402,7 +402,7 @@ export default function StudyNewZealandPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Success Stories from New Zealand</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Hear from students who made their New Zealand dream come true with WowCap's guidance
+              Hear from students who made their New Zealand dream come true with MeritCap's guidance
             </p>
           </div>
 
@@ -424,7 +424,7 @@ export default function StudyNewZealandPage() {
                   </div>
                 </div>
                 <blockquote className="text-lg text-gray-700 italic mb-6">
-                  "WowCap made my New Zealand dream a reality. From university selection to visa approval, their
+                  "MeritCap made my New Zealand dream a reality. From university selection to visa approval, their
                   AI-powered matching and expert guidance were incredible. Now I'm working at Xero with a NZD 95K
                   package and have permanent residency!"
                 </blockquote>
@@ -509,7 +509,7 @@ export default function StudyNewZealandPage() {
                 </div>
               </div>
               <blockquote className="text-sm text-gray-700 italic mb-3">
-                "Got permanent residency and working at Kiwibank. Victoria University's business program and WowCap's
+                "Got permanent residency and working at Kiwibank. Victoria University's business program and MeritCap's
                 support were amazing."
               </blockquote>
               <div className="flex text-yellow-400">
@@ -552,7 +552,7 @@ export default function StudyNewZealandPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Start Your New Zealand Journey?</h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of successful students who chose WowCap for their New Zealand dream. Get personalized
+            Join thousands of successful students who chose MeritCap for their New Zealand dream. Get personalized
             guidance from our expert counselors today.
           </p>
 
@@ -567,7 +567,7 @@ export default function StudyNewZealandPage() {
               className="border-white text-white hover:bg-white hover:text-blue-900 px-8 bg-transparent"
             >
               <Phone className="w-5 h-5 mr-2" />
-              Call +64-WOWCAP-NZ
+              Call +64-MERITCAP-NZ
             </Button>
             <Button
               size="lg"

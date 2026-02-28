@@ -652,11 +652,11 @@ export default function StudyChennaiPage() {
         </div>
       </section>
 
-      {/* Why Choose WowCap Section */}
+      {/* Why Choose MeritCap Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose WowCap?</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose MeritCap?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Your end-to-end partner for studying in Chennai with personalized guidance and proven success
             </p>
@@ -809,7 +809,7 @@ export default function StudyChennaiPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Success Stories from Chennai</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Hear from students who made their dreams come true with WowCap's guidance in Chennai
+              Hear from students who made their dreams come true with MeritCap's guidance in Chennai
             </p>
           </div>
 
@@ -830,7 +830,7 @@ export default function StudyChennaiPage() {
                   </div>
                 </div>
                 <blockquote className="text-lg text-gray-700 italic mb-6">
-                  "WowCap made my IIT Madras dream a reality. From college selection to JEE preparation, their
+                  "MeritCap made my IIT Madras dream a reality. From college selection to JEE preparation, their
                   AI-powered matching and expert guidance were incredible. Now I'm working at Google with a ₹45L package
                   and contributing to cutting-edge technology!"
                 </blockquote>
@@ -884,7 +884,7 @@ export default function StudyChennaiPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "From Coimbatore to Anna University! WowCap's counselors helped me navigate the TNEA process. Now I'm
+                  "From Coimbatore to Anna University! MeritCap's counselors helped me navigate the TNEA process. Now I'm
                   at ISRO with ₹25L package."
                 </p>
                 <div className="flex items-center justify-between">
@@ -914,7 +914,7 @@ export default function StudyChennaiPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "WowCap's arts guidance was spot-on! Got into MCC with their expert preparation. Their support made
+                  "MeritCap's arts guidance was spot-on! Got into MCC with their expert preparation. Their support made
                   all the difference for RBI career."
                 </p>
                 <div className="flex items-center justify-between">
@@ -944,7 +944,7 @@ export default function StudyChennaiPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "Working at Ford now! WowCap connected me with the right automotive program at SRM and helped secure
+                  "Working at Ford now! MeritCap connected me with the right automotive program at SRM and helped secure
                   my dream engineering career."
                 </p>
                 <div className="flex items-center justify-between">
@@ -974,7 +974,7 @@ export default function StudyChennaiPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "Started my own startup! WowCap's network and guidance were invaluable for my entrepreneurial journey
+                  "Started my own startup! MeritCap's network and guidance were invaluable for my entrepreneurial journey
                   from Loyola College."
                 </p>
                 <div className="flex items-center justify-between">
@@ -998,7 +998,7 @@ export default function StudyChennaiPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Start Your Chennai Journey?</h2>
           <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of successful students who chose WowCap for their Chennai education dream. Get personalized
+            Join thousands of successful students who chose MeritCap for their Chennai education dream. Get personalized
             guidance from our expert counselors today.
           </p>
 
@@ -1013,7 +1013,7 @@ export default function StudyChennaiPage() {
               className="border-white text-white hover:bg-white hover:text-purple-900 px-8 bg-transparent"
             >
               <Phone className="w-5 h-5 mr-2" />
-              Call +91-44-WOWCAP
+              Call +91-44-MERITCAP
             </Button>
             <Button
               size="lg"

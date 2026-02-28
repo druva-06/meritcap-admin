@@ -655,7 +655,7 @@ export default function LawPage() {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Champion Justice?</h2>
             <p className="text-xl text-amber-100 mb-8 leading-relaxed">
-              Join thousands of successful lawyers who chose WowCap for their legal education journey. Get expert
+              Join thousands of successful lawyers who chose MeritCap for their legal education journey. Get expert
               guidance, college selection support, and career counseling.
             </p>
 

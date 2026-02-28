@@ -72,7 +72,7 @@
 ### File Structure
 
 ```
-wowcap-admin/
+meritcap-admin/
 ├── app/
 │   └── admin/
 │       ├── layout.tsx                    (Updated - added Roles menu)

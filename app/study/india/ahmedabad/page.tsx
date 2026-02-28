@@ -475,11 +475,11 @@ export default function StudyAhmedabadPage() {
         </div>
       </section>
 
-      {/* Why Choose WowCap Section */}
+      {/* Why Choose MeritCap Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose WowCap?</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose MeritCap?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Your end-to-end partner for studying in Ahmedabad with personalized guidance and proven success
             </p>
@@ -632,7 +632,7 @@ export default function StudyAhmedabadPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Success Stories from Ahmedabad</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Hear from students who made their dreams come true with WowCap's guidance in Ahmedabad
+              Hear from students who made their dreams come true with MeritCap's guidance in Ahmedabad
             </p>
           </div>
 
@@ -653,7 +653,7 @@ export default function StudyAhmedabadPage() {
                   </div>
                 </div>
                 <blockquote className="text-lg text-gray-700 italic mb-6">
-                  "WowCap made my IIM-A dream a reality! Their CAT preparation guidance and interview coaching were
+                  "MeritCap made my IIM-A dream a reality! Their CAT preparation guidance and interview coaching were
                   exceptional. Now I'm working at McKinsey with a ₹45L package and leading strategic projects for
                   Fortune 500 companies!"
                 </blockquote>
@@ -707,7 +707,7 @@ export default function StudyAhmedabadPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "WowCap's portfolio guidance was incredible! Got into CEPT with merit scholarship. Their design
+                  "MeritCap's portfolio guidance was incredible! Got into CEPT with merit scholarship. Their design
                   mentorship helped me land my dream job at a top architecture firm."
                 </p>
                 <div className="flex items-center justify-between">
@@ -737,7 +737,7 @@ export default function StudyAhmedabadPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "From small town to NID! WowCap's design entrance coaching was perfect. Now I'm a UX designer at a
+                  "From small town to NID! MeritCap's design entrance coaching was perfect. Now I'm a UX designer at a
                   leading tech company with amazing growth opportunities."
                 </p>
                 <div className="flex items-center justify-between">
@@ -767,7 +767,7 @@ export default function StudyAhmedabadPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "WowCap helped me get into Nirma with scholarship! Their engineering guidance and placement support
+                  "MeritCap helped me get into Nirma with scholarship! Their engineering guidance and placement support
                   led me to a great job at a multinational company."
                 </p>
                 <div className="flex items-center justify-between">
@@ -797,7 +797,7 @@ export default function StudyAhmedabadPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "Started my own textile business! WowCap's entrepreneurship guidance and industry connections were
+                  "Started my own textile business! MeritCap's entrepreneurship guidance and industry connections were
                   invaluable for my journey from Gujarat University."
                 </p>
                 <div className="flex items-center justify-between">
@@ -821,7 +821,7 @@ export default function StudyAhmedabadPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Start Your Ahmedabad Journey?</h2>
           <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of successful students who chose WowCap for their Ahmedabad education dream. Get personalized
+            Join thousands of successful students who chose MeritCap for their Ahmedabad education dream. Get personalized
             guidance from our expert counselors today.
           </p>
 
@@ -836,7 +836,7 @@ export default function StudyAhmedabadPage() {
               className="border-white text-white hover:bg-white hover:text-purple-900 px-8 bg-transparent"
             >
               <Phone className="w-5 h-5 mr-2" />
-              Call +91-79-WOWCAP
+              Call +91-79-MERITCAP
             </Button>
             <Button
               size="lg"

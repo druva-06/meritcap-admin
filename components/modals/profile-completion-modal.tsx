@@ -179,9 +179,9 @@ export function ProfileCompletionModal({ isOpen, onClose, onComplete, onSkip, us
       },
     }
 
-    localStorage.setItem("wowcap_user", JSON.stringify(completeProfile))
-    localStorage.setItem("wowcap_profile_completion_date", new Date().toISOString())
-    localStorage.setItem("wowcap_vertical_preference", currentCategory)
+    localStorage.setItem("meritcap_user", JSON.stringify(completeProfile))
+    localStorage.setItem("meritcap_profile_completion_date", new Date().toISOString())
+    localStorage.setItem("meritcap_vertical_preference", currentCategory)
 
     onComplete(completeProfile)
   }
@@ -209,7 +209,7 @@ export function ProfileCompletionModal({ isOpen, onClose, onComplete, onSkip, us
       signupTime: userData?.signupTime || new Date().toISOString(),
     }
 
-    localStorage.setItem("wowcap_user", JSON.stringify(skippedProfile))
+    localStorage.setItem("meritcap_user", JSON.stringify(skippedProfile))
     onSkip()
   }
 

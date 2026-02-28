@@ -19,7 +19,7 @@ export default function TestDashboard() {
       profileCompletion: 85,
     }
 
-    localStorage.setItem("wowcap_user", JSON.stringify(testUser))
+    localStorage.setItem("meritcap_user", JSON.stringify(testUser))
 
     // Redirect to dashboard
     router.push("/dashboard")

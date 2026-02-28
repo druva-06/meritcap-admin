@@ -469,11 +469,11 @@ export default function StudyBangalorePage() {
         </div>
       </section>
 
-      {/* Why Choose WowCap Section */}
+      {/* Why Choose MeritCap Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose WowCap?</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose MeritCap?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Your end-to-end partner for studying in Bangalore with personalized guidance and proven success
             </p>
@@ -626,7 +626,7 @@ export default function StudyBangalorePage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Success Stories from Bangalore</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Hear from students who made their dreams come true with WowCap's guidance in Bangalore
+              Hear from students who made their dreams come true with MeritCap's guidance in Bangalore
             </p>
           </div>
 
@@ -647,7 +647,7 @@ export default function StudyBangalorePage() {
                   </div>
                 </div>
                 <blockquote className="text-lg text-gray-700 italic mb-6">
-                  "WowCap helped me get into IISc Bangalore for my research program. Their guidance on entrance exams
+                  "MeritCap helped me get into IISc Bangalore for my research program. Their guidance on entrance exams
                   and research proposals was exceptional. Now I'm working at Google with a ₹60L package and pursuing my
                   PhD simultaneously!"
                 </blockquote>
@@ -701,7 +701,7 @@ export default function StudyBangalorePage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "From engineering to IIM-B! WowCap's career transition guidance was perfect. Now I'm a Product Manager
+                  "From engineering to IIM-B! MeritCap's career transition guidance was perfect. Now I'm a Product Manager
                   at Microsoft with ₹45L package."
                 </p>
                 <div className="flex items-center justify-between">
@@ -731,7 +731,7 @@ export default function StudyBangalorePage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "WowCap's tech guidance was amazing! Got into IIIT-B with their coding prep support. Now I'm a
+                  "MeritCap's tech guidance was amazing! Got into IIIT-B with their coding prep support. Now I'm a
                   founding engineer at a unicorn startup!"
                 </p>
                 <div className="flex items-center justify-between">
@@ -761,7 +761,7 @@ export default function StudyBangalorePage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "WowCap helped me choose the right course at Christ University. Their career counseling led me to a
+                  "MeritCap helped me choose the right course at Christ University. Their career counseling led me to a
                   great job at Deloitte!"
                 </p>
                 <div className="flex items-center justify-between">
@@ -791,7 +791,7 @@ export default function StudyBangalorePage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "Built my own AI startup! WowCap's entrepreneurship guidance and network connections were invaluable
+                  "Built my own AI startup! MeritCap's entrepreneurship guidance and network connections were invaluable
                   for my journey from PES."
                 </p>
                 <div className="flex items-center justify-between">
@@ -815,7 +815,7 @@ export default function StudyBangalorePage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Start Your Bangalore Journey?</h2>
           <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of successful students who chose WowCap for their Bangalore education dream. Get personalized
+            Join thousands of successful students who chose MeritCap for their Bangalore education dream. Get personalized
             guidance from our expert counselors today.
           </p>
 
@@ -830,7 +830,7 @@ export default function StudyBangalorePage() {
               className="border-white text-white hover:bg-white hover:text-purple-900 px-8 bg-transparent"
             >
               <Phone className="w-5 h-5 mr-2" />
-              Call +91-80-WOWCAP
+              Call +91-80-MERITCAP
             </Button>
             <Button
               size="lg"

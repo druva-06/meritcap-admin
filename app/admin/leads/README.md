@@ -192,7 +192,7 @@ function MyComponent() {
 ### Local Setup
 
 ```bash
-cd wowcap-admin
+cd meritcap-admin
 pnpm install
 pnpm dev
 ```
@@ -256,4 +256,4 @@ For issues or questions, contact the development team.
 
 ## License
 
-Proprietary - WowCap Education Consultancy
+Proprietary - MeritCap Education Consultancy

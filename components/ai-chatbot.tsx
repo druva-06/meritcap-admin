@@ -60,49 +60,49 @@ export default function AIChatbot({ currentPage }: ChatbotProps) {
 
     const welcomeMessages: Record<string, string[]> = {
       home: [
-        "Hi! I'm WOW BOT and your career Assistant! Looking to study abroad? I can help you find the perfect program!",
-        "Welcome to WowCap! I'm WOW BOT and your career Assistant here to guide you through your study abroad journey. What are you most interested in?",
-        "Hello! I'm WOW BOT and your career Assistant. Ready to explore amazing study opportunities? I can help you discover programs that match your goals!",
+        "Hi! I'm MeritCap Bot and your career Assistant! Looking to study abroad? I can help you find the perfect program!",
+        "Welcome to MeritCap! I'm MeritCap Bot and your career Assistant here to guide you through your study abroad journey. What are you most interested in?",
+        "Hello! I'm MeritCap Bot and your career Assistant. Ready to explore amazing study opportunities? I can help you discover programs that match your goals!",
       ],
       dashboard: [
-        "Welcome back! I'm WOW BOT and your career Assistant. I can help you track your applications, review deadlines, or answer questions about your progress.",
-        "Great to see you again! I'm WOW BOT and your career Assistant. Need help with any of your applications or want to explore new opportunities?",
-        "Hi there! I'm WOW BOT and your career Assistant. I notice you're managing your applications. Any questions about deadlines or next steps?",
+        "Welcome back! I'm MeritCap Bot and your career Assistant. I can help you track your applications, review deadlines, or answer questions about your progress.",
+        "Great to see you again! I'm MeritCap Bot and your career Assistant. Need help with any of your applications or want to explore new opportunities?",
+        "Hi there! I'm MeritCap Bot and your career Assistant. I notice you're managing your applications. Any questions about deadlines or next steps?",
       ],
       "study-abroad": [
-        "Exploring study abroad options? Excellent choice! I'm WOW BOT and your career Assistant. I can help you understand requirements, costs, and application processes.",
-        "International education opens amazing doors! I'm WOW BOT and your career Assistant here to help you find the perfect country and program.",
-        "Studying abroad is life-changing! I'm WOW BOT and your career Assistant. I can guide you through choosing universities, applications, and visa processes.",
+        "Exploring study abroad options? Excellent choice! I'm MeritCap Bot and your career Assistant. I can help you understand requirements, costs, and application processes.",
+        "International education opens amazing doors! I'm MeritCap Bot and your career Assistant here to help you find the perfect country and program.",
+        "Studying abroad is life-changing! I'm MeritCap Bot and your career Assistant. I can guide you through choosing universities, applications, and visa processes.",
       ],
       "study-india": [
-        "Interested in studying in India? Great decision! I'm WOW BOT and your career Assistant. I can guide you through top universities, courses, and admission requirements.",
-        "India offers world-class education at affordable costs! I'm WOW BOT and your career Assistant here to help you explore the best options.",
-        "Studying in India? I'm WOW BOT and your career Assistant. I can help you understand the admission process, top universities, and scholarship opportunities.",
+        "Interested in studying in India? Great decision! I'm MeritCap Bot and your career Assistant. I can guide you through top universities, courses, and admission requirements.",
+        "India offers world-class education at affordable costs! I'm MeritCap Bot and your career Assistant here to help you explore the best options.",
+        "Studying in India? I'm MeritCap Bot and your career Assistant. I can help you understand the admission process, top universities, and scholarship opportunities.",
       ],
       "study-online": [
-        "Online education offers incredible flexibility! I'm WOW BOT and your career Assistant. I can help you find accredited programs that fit your schedule and goals.",
-        "Exploring online learning? Smart choice! I'm WOW BOT and your career Assistant here to guide you through quality programs and career outcomes.",
-        "Online degrees are increasingly valuable! I'm WOW BOT and your career Assistant. I can help you choose programs with strong industry recognition.",
+        "Online education offers incredible flexibility! I'm MeritCap Bot and your career Assistant. I can help you find accredited programs that fit your schedule and goals.",
+        "Exploring online learning? Smart choice! I'm MeritCap Bot and your career Assistant here to guide you through quality programs and career outcomes.",
+        "Online degrees are increasingly valuable! I'm MeritCap Bot and your career Assistant. I can help you choose programs with strong industry recognition.",
       ],
       "test-prep": [
-        "Test preparation is crucial for admissions! I'm WOW BOT and your career Assistant. I can provide guidance on IELTS, TOEFL, GRE, GMAT, and study strategies.",
-        "Getting ready for entrance exams? I'm WOW BOT and your career Assistant with tips, resources, and strategies to help you achieve your target scores!",
-        "Test prep can be overwhelming, but I'm WOW BOT and your career Assistant here to help! Which exam are you preparing for?",
+        "Test preparation is crucial for admissions! I'm MeritCap Bot and your career Assistant. I can provide guidance on IELTS, TOEFL, GRE, GMAT, and study strategies.",
+        "Getting ready for entrance exams? I'm MeritCap Bot and your career Assistant with tips, resources, and strategies to help you achieve your target scores!",
+        "Test prep can be overwhelming, but I'm MeritCap Bot and your career Assistant here to help! Which exam are you preparing for?",
       ],
       applications: [
-        "Application process got you stressed? I'm WOW BOT and your career Assistant. I can guide you through each step and help you stay organized!",
-        "I see you're working on applications! I'm WOW BOT and your career Assistant. Need help with deadlines, requirements, or document preparation?",
-        "Applications can be complex, but I'm WOW BOT and your career Assistant here to simplify the process for you!",
+        "Application process got you stressed? I'm MeritCap Bot and your career Assistant. I can guide you through each step and help you stay organized!",
+        "I see you're working on applications! I'm MeritCap Bot and your career Assistant. Need help with deadlines, requirements, or document preparation?",
+        "Applications can be complex, but I'm MeritCap Bot and your career Assistant here to simplify the process for you!",
       ],
       documents: [
-        "Document preparation is key to successful applications! I'm WOW BOT and your career Assistant. I can help with SOPs, LORs, transcripts, and more.",
-        "Getting your documents ready? I'm WOW BOT and your career Assistant with templates, tips, and guidance for all required materials!",
-        "Document requirements can be confusing. I'm WOW BOT and your career Assistant here to help you understand what you need and how to prepare it!",
+        "Document preparation is key to successful applications! I'm MeritCap Bot and your career Assistant. I can help with SOPs, LORs, transcripts, and more.",
+        "Getting your documents ready? I'm MeritCap Bot and your career Assistant with templates, tips, and guidance for all required materials!",
+        "Document requirements can be confusing. I'm MeritCap Bot and your career Assistant here to help you understand what you need and how to prepare it!",
       ],
       university: [
-        "Researching this university? Great choice! I'm WOW BOT and your career Assistant. I can tell you about admission requirements, deadlines, and application tips.",
-        "Interested in learning more about this institution? I'm WOW BOT and your career Assistant. I can provide insights on programs, costs, and student life!",
-        "This university looks interesting! I'm WOW BOT and your career Assistant. Want to know about admission chances, requirements, or campus life?",
+        "Researching this university? Great choice! I'm MeritCap Bot and your career Assistant. I can tell you about admission requirements, deadlines, and application tips.",
+        "Interested in learning more about this institution? I'm MeritCap Bot and your career Assistant. I can provide insights on programs, costs, and student life!",
+        "This university looks interesting! I'm MeritCap Bot and your career Assistant. Want to know about admission chances, requirements, or campus life?",
       ],
     }
 
@@ -440,10 +440,10 @@ export default function AIChatbot({ currentPage }: ChatbotProps) {
                 <Zap className="w-4 h-4 text-yellow-400" />
                 <span>
                   {getPageContext() === "dashboard"
-                    ? "Hi! I'm WOW BOT ⚡ Need help with your applications?"
+                    ? "Hi! I'm MeritCap Bot ⚡ Need help with your applications?"
                     : getPageContext() === "test-prep"
-                      ? "Hi! I'm WOW BOT ⚡ Questions about test prep?"
-                      : "Hi! I'm WOW BOT ⚡ Ready to spark your study journey?"}
+                      ? "Hi! I'm MeritCap Bot ⚡ Questions about test prep?"
+                      : "Hi! I'm MeritCap Bot ⚡ Ready to spark your study journey?"}
                 </span>
               </div>
               <div className="absolute top-full right-6 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
@@ -474,7 +474,7 @@ export default function AIChatbot({ currentPage }: ChatbotProps) {
               </div>
               <div>
                 <h3 className="font-bold text-lg flex items-center">
-                  WOW BOT
+                  MeritCap Bot
                   <Zap className="w-4 h-4 ml-2 text-yellow-300 animate-pulse" />
                 </h3>
                 <p className="text-sm opacity-90 font-medium">Your Career Assistant ⚡</p>
@@ -521,7 +521,7 @@ export default function AIChatbot({ currentPage }: ChatbotProps) {
                         {message.sender === "bot" && (
                           <div className="flex items-center mb-2">
                             <Zap className="w-3 h-3 text-blue-500 mr-1" />
-                            <span className="text-xs font-semibold text-blue-600">WOW BOT</span>
+                            <span className="text-xs font-semibold text-blue-600">MeritCap Bot</span>
                           </div>
                         )}
                         <p className="text-sm leading-relaxed font-medium">{message.text}</p>
@@ -537,7 +537,7 @@ export default function AIChatbot({ currentPage }: ChatbotProps) {
                       <div className="bg-white p-4 rounded-2xl rounded-bl-md shadow-lg border border-gray-100">
                         <div className="flex items-center space-x-2 mb-2">
                           <Zap className="w-3 h-3 text-blue-500 animate-pulse" />
-                          <span className="text-xs font-semibold text-blue-600">WOW BOT is thinking...</span>
+                          <span className="text-xs font-semibold text-blue-600">MeritCap Bot is thinking...</span>
                         </div>
                         <div className="flex space-x-1">
                           <div className="w-2.5 h-2.5 bg-blue-400 rounded-full animate-bounce"></div>

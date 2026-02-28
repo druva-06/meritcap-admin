@@ -134,7 +134,7 @@ export default function SignupPage() {
 
       // Store user session
       localStorage.setItem(
-        "wowcap_user",
+        "meritcap_user",
         JSON.stringify({
           userId: signupResponse.userId,
           email: signupResponse.email,
@@ -184,7 +184,7 @@ export default function SignupPage() {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">
                 Account Created Successfully! 🎉
               </h1>
-              <p className="text-gray-600">Welcome to WowCap, {formData.fullName}!</p>
+              <p className="text-gray-600">Welcome to MeritCap, {formData.fullName}!</p>
             </div>
 
             {/* Document Vault Encouragement */}
@@ -284,7 +284,7 @@ export default function SignupPage() {
               <User className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {invitationToken ? 'Complete Your Registration' : 'Join WowCap'}
+              {invitationToken ? 'Complete Your Registration' : 'Join MeritCap'}
             </h1>
             <p className="text-gray-600 mt-2">
               {invitationToken ? 'You\'ve been invited to join' : 'Create your free account today'}

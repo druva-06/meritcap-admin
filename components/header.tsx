@@ -47,7 +47,7 @@ export function Header() {
 
   useEffect(() => {
     const checkAuthState = () => {
-      const userData = localStorage.getItem("wowcap_user")
+      const userData = localStorage.getItem("meritcap_user")
       if (userData) {
         setIsLoggedIn(true)
         const user = JSON.parse(userData)
@@ -63,7 +63,7 @@ export function Header() {
 
     // Listen for storage changes (when user logs in from other components)
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "wowcap_user") {
+      if (e.key === "meritcap_user") {
         checkAuthState()
       }
     }
@@ -83,10 +83,10 @@ export function Header() {
   }, [])
 
   const handleLogout = () => {
-    localStorage.removeItem("wowcap_user")
-    localStorage.removeItem("wowcap_documents")
-    localStorage.removeItem("wowcap_applications")
-    localStorage.removeItem("wowcap_tasks")
+    localStorage.removeItem("meritcap_user")
+    localStorage.removeItem("meritcap_documents")
+    localStorage.removeItem("meritcap_applications")
+    localStorage.removeItem("meritcap_tasks")
     setIsLoggedIn(false)
     setUserName("")
     router.push("/")
@@ -108,7 +108,7 @@ export function Header() {
             </div>
             <div className="flex flex-col">
               <div className="text-2xl font-black bg-gradient-to-r from-slate-800 via-blue-700 to-indigo-800 bg-clip-text text-transparent tracking-tight">
-                WowCap
+                MeritCap
               </div>
               <div className="text-xs text-gray-500 font-medium tracking-wider -mt-1">EDUCATION PLATFORM</div>
             </div>

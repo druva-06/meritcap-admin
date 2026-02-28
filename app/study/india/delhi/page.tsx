@@ -638,11 +638,11 @@ export default function StudyDelhiPage() {
         </div>
       </section>
 
-      {/* Why Choose WowCap Section */}
+      {/* Why Choose MeritCap Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose WowCap?</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose MeritCap?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Your end-to-end partner for studying in Delhi with personalized guidance and proven success
             </p>
@@ -794,7 +794,7 @@ export default function StudyDelhiPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Success Stories from Delhi</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Hear from students who made their dreams come true with WowCap's guidance in Delhi
+              Hear from students who made their dreams come true with MeritCap's guidance in Delhi
             </p>
           </div>
 
@@ -815,7 +815,7 @@ export default function StudyDelhiPage() {
                   </div>
                 </div>
                 <blockquote className="text-lg text-gray-700 italic mb-6">
-                  "WowCap made my IIT Delhi dream a reality. From college selection to entrance exam preparation, their
+                  "MeritCap made my IIT Delhi dream a reality. From college selection to entrance exam preparation, their
                   AI-powered matching and expert guidance were incredible. Now I'm working at Google with a ₹45L
                   package and living my best life in Bangalore!"
                 </blockquote>
@@ -869,7 +869,7 @@ export default function StudyDelhiPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "From Jaipur to JNU! WowCap's counselors helped me navigate the complex admission process. Now I'm pursuing my dream in international relations."
+                  "From Jaipur to JNU! MeritCap's counselors helped me navigate the complex admission process. Now I'm pursuing my dream in international relations."
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="flex text-yellow-400">
@@ -898,7 +898,7 @@ export default function StudyDelhiPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "WowCap's NEET guidance was spot-on! Got into AIIMS Delhi with their expert coaching recommendations. Their support made all the difference."
+                  "MeritCap's NEET guidance was spot-on! Got into AIIMS Delhi with their expert coaching recommendations. Their support made all the difference."
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="flex text-yellow-400">
@@ -927,7 +927,7 @@ export default function StudyDelhiPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "Working at RBI now! WowCap connected me with the right program at DSE and helped secure my dream job in economics."
+                  "Working at RBI now! MeritCap connected me with the right program at DSE and helped secure my dream job in economics."
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="flex text-yellow-400">
@@ -956,7 +956,7 @@ export default function StudyDelhiPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm italic mb-4">
-                  "Started my own tech startup! WowCap's network and guidance were invaluable for my entrepreneurial journey from DTU."
+                  "Started my own tech startup! MeritCap's network and guidance were invaluable for my entrepreneurial journey from DTU."
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="flex text-yellow-400">
@@ -979,7 +979,7 @@ export default function StudyDelhiPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Start Your Delhi Journey?</h2>
           <p className="text-xl text-teal-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of successful students who chose WowCap for their Delhi education dream. Get personalized guidance
+            Join thousands of successful students who chose MeritCap for their Delhi education dream. Get personalized guidance
             from our expert counselors today.
           </p>
 
@@ -994,7 +994,7 @@ export default function StudyDelhiPage() {
               className="border-white text-white hover:bg-white hover:text-teal-900 px-8 bg-transparent"
             >
               <Phone className="w-5 h-5 mr-2" />
-              Call +91-11-WOWCAP
+              Call +91-11-MERITCAP
             </Button>
             <Button
               size="lg"

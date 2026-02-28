@@ -92,21 +92,21 @@ const testimonials = [
     course: "Engineering at Jadavpur University",
     image: "/placeholder.svg?height=60&width=60&text=AC",
     rating: 5,
-    text: "WowCap made my admission to JU seamless. Their guidance throughout the process was exceptional.",
+    text: "MeritCap made my admission to JU seamless. Their guidance throughout the process was exceptional.",
   },
   {
     name: "Priya Banerjee",
     course: "MBA at IIM Calcutta",
     image: "/placeholder.svg?height=60&width=60&text=PB",
     rating: 5,
-    text: "Thanks to WowCap, I got into IIM Calcutta with a full scholarship. Their support was incredible.",
+    text: "Thanks to MeritCap, I got into IIM Calcutta with a full scholarship. Their support was incredible.",
   },
   {
     name: "Rohit Ghosh",
     course: "Statistics at ISI",
     image: "/placeholder.svg?height=60&width=60&text=RG",
     rating: 5,
-    text: "The counselors at WowCap helped me navigate the complex admission process at ISI perfectly.",
+    text: "The counselors at MeritCap helped me navigate the complex admission process at ISI perfectly.",
   },
 ]
 
@@ -485,11 +485,11 @@ export default function KolkataStudyPage() {
         </div>
       </section>
 
-      {/* Why Choose WowCap */}
+      {/* Why Choose MeritCap */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose WowCap for Kolkata Admissions?</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose MeritCap for Kolkata Admissions?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Your trusted partner for seamless college admissions in the City of Joy
             </p>
@@ -580,7 +580,7 @@ export default function KolkataStudyPage() {
                   </div>
                   <h3 className="text-xl font-semibold text-center mb-4">Watch Success Stories</h3>
                   <p className="text-gray-600 text-center mb-6">
-                    See how WowCap helped students get into top Kolkata colleges
+                    See how MeritCap helped students get into top Kolkata colleges
                   </p>
                   <Button className="w-full bg-purple-600 hover:bg-purple-700">
                     <Play className="mr-2 h-4 w-4" />
@@ -627,7 +627,7 @@ export default function KolkataStudyPage() {
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">What Our Students Say</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Real stories from students who achieved their dreams with WowCap
+              Real stories from students who achieved their dreams with MeritCap
             </p>
           </div>
 
@@ -664,7 +664,7 @@ export default function KolkataStudyPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-4">Ready to Start Your Journey in Kolkata?</h2>
           <p className="text-xl mb-8 text-purple-200 max-w-3xl mx-auto">
-            Join thousands of students who have successfully secured admissions in Kolkata's top colleges with WowCap
+            Join thousands of students who have successfully secured admissions in Kolkata's top colleges with MeritCap
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-white text-purple-900 hover:bg-purple-50 px-8 py-3">

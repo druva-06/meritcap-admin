@@ -42,7 +42,7 @@ export default function EditApplicationPage({ params }: { params: { id: string }
     // Step 4: Commission & Payment
     collegeCommission: "5000",
     subAgentCommission: "1500",
-    wowcapRevenue: "3500",
+    meritcapRevenue: "3500",
     paymentTerms: "enrollment",
   })
 
@@ -526,13 +526,13 @@ export default function EditApplicationPage({ params }: { params: { id: string }
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="wowcapRevenue">WowCap Revenue ($)</Label>
+                  <Label htmlFor="meritcapRevenue">MeritCap Revenue ($)</Label>
                   <Input
-                    id="wowcapRevenue"
+                    id="meritcapRevenue"
                     type="number"
                     placeholder="3500"
-                    value={formData.wowcapRevenue}
-                    onChange={(e) => setFormData({ ...formData, wowcapRevenue: e.target.value })}
+                    value={formData.meritcapRevenue}
+                    onChange={(e) => setFormData({ ...formData, meritcapRevenue: e.target.value })}
                   />
                 </div>
               </div>
@@ -563,7 +563,7 @@ export default function EditApplicationPage({ params }: { params: { id: string }
                     {(
                       Number.parseFloat(formData.collegeCommission || "0") +
                       Number.parseFloat(formData.subAgentCommission || "0") +
-                      Number.parseFloat(formData.wowcapRevenue || "0")
+                      Number.parseFloat(formData.meritcapRevenue || "0")
                     ).toFixed(2)}
                   </span>
                 </div>

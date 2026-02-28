@@ -48,7 +48,7 @@ export default function EventDetailPage() {
         "Comprehensive IELTS preparation workshop with expert trainers. Learn proven strategies for all four modules and boost your band score.",
       date: "2024-12-20",
       time: "2:00 PM - 5:00 PM",
-      location: "WowCap Training Center, Bangalore",
+      location: "MeritCap Training Center, Bangalore",
       category: "Workshop",
       image: "/ielts-classroom-study.png",
       expectedAttendees: 100,

@@ -398,11 +398,11 @@ export default function StudyCanadaPage() {
         </div>
       </section>
 
-      {/* Why Choose WowCap Section */}
+      {/* Why Choose MeritCap Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose WowCap?</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose MeritCap?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Your end-to-end partner for studying in Canada with personalized guidance and proven success
             </p>
@@ -556,7 +556,7 @@ export default function StudyCanadaPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Success Stories from Canada</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Hear from students who made their Canadian dream come true with WowCap's guidance
+              Hear from students who made their Canadian dream come true with MeritCap's guidance
             </p>
           </div>
 
@@ -578,7 +578,7 @@ export default function StudyCanadaPage() {
                   </div>
                 </div>
                 <blockquote className="text-lg text-gray-700 italic mb-6">
-                  "WowCap made my Toronto dream a reality. From university selection to visa approval, their AI-powered
+                  "MeritCap made my Toronto dream a reality. From university selection to visa approval, their AI-powered
                   matching and expert guidance were incredible. Now I'm working at Shopify with a CAD 110K package and
                   on my way to permanent residency!"
                 </blockquote>
@@ -623,7 +623,7 @@ export default function StudyCanadaPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Start Your Canada Journey?</h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of successful students who chose WowCap for their Canadian dream. Get personalized guidance
+            Join thousands of successful students who chose MeritCap for their Canadian dream. Get personalized guidance
             from our expert counselors today.
           </p>
 
@@ -638,7 +638,7 @@ export default function StudyCanadaPage() {
               className="border-white text-white hover:bg-white hover:text-blue-900 px-8 bg-transparent"
             >
               <Phone className="w-5 h-5 mr-2" />
-              Call +1-800-WOWCAP
+              Call +1-800-MERITCAP
             </Button>
             <Button
               size="lg"

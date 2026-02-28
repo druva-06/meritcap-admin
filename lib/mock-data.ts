@@ -547,7 +547,7 @@ export const mockAppointments: Appointment[] = [
     time: "11:00 AM",
     duration: "1 hour",
     status: "scheduled",
-    location: "WowCap Office, Mumbai",
+    location: "MeritCap Office, Mumbai",
     notes: "Document verification and application process discussion",
     reminder: {
       enabled: true,
@@ -569,7 +569,7 @@ export const mockAICallResults: AICallResult[] = [
     status: "completed",
     outcome: "interested",
     transcript:
-      "AI: Hello, this is WowCap calling about study abroad opportunities...\nLead: Yes, I am interested in studying in Australia...",
+      "AI: Hello, this is MeritCap calling about study abroad opportunities...\nLead: Yes, I am interested in studying in Australia...",
     sentiment: "positive",
     recordingUrl: "/mock-ai-recording.mp3",
     aiConfidenceScore: 85,
@@ -586,7 +586,7 @@ export const mockAICallResults: AICallResult[] = [
     duration: "2:15",
     status: "completed",
     outcome: "not-interested",
-    transcript: "AI: Hello, this is WowCap calling...\nLead: Not interested, please do not call again.",
+    transcript: "AI: Hello, this is MeritCap calling...\nLead: Not interested, please do not call again.",
     sentiment: "negative",
     aiConfidenceScore: 95,
     nextAction: "Mark as not interested",

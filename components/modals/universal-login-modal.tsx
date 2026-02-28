@@ -52,7 +52,7 @@ export function UniversalLoginModal({ isOpen, onClose, onComplete }: UniversalLo
       signupTime: new Date().toISOString(),
     }
 
-    localStorage.setItem("wowcap_user", JSON.stringify(userData))
+    localStorage.setItem("meritcap_user", JSON.stringify(userData))
     onComplete(userData)
     onClose()
   }
@@ -73,7 +73,7 @@ export function UniversalLoginModal({ isOpen, onClose, onComplete }: UniversalLo
       loginTime: new Date().toISOString(),
     }
 
-    localStorage.setItem("wowcap_user", JSON.stringify(userData))
+    localStorage.setItem("meritcap_user", JSON.stringify(userData))
     onComplete(userData)
     onClose()
   }

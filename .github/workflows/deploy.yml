@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/wowcap-admin
+  IMAGE_NAME: ${{ github.repository_owner }}/meritcap-admin
 
 jobs:
   build-and-deploy:
@@ -50,8 +50,8 @@ jobs:
           username: deployer
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            microk8s kubectl set image deployment/wowcap-admin \
-              wowcap-admin=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.env.outputs.env }}-${{ github.sha }} \
+            microk8s kubectl set image deployment/meritcap-admin \
+              meritcap-admin=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.env.outputs.env }}-${{ github.sha }} \
               -n ${{ steps.env.outputs.namespace }}
-            microk8s kubectl rollout status deployment/wowcap-admin \
+            microk8s kubectl rollout status deployment/meritcap-admin \
               -n ${{ steps.env.outputs.namespace }} --timeout=120s

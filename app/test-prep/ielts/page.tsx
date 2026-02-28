@@ -317,9 +317,9 @@ export default function IELTSPage() {
       <section className="py-12 md:py-20 px-4 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto">
           <div className="text-center mb-12 md:mb-16">
-            <Badge className="mb-4 bg-blue-100 text-blue-700 px-4 py-2 text-sm">Why WowCap</Badge>
+            <Badge className="mb-4 bg-blue-100 text-blue-700 px-4 py-2 text-sm">Why MeritCap</Badge>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Why WowCap is the Best Choice
+              Why MeritCap is the Best Choice
             </h2>
             <p className="text-lg md:text-xl text-gray-600">
               Proven methodology, expert instructors, and guaranteed results

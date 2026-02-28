@@ -113,7 +113,7 @@ export default function LoginPage() {
             <div className="w-16 h-16 bg-white/20 backdrop-blur-lg rounded-2xl flex items-center justify-center mb-4 mx-auto shadow-2xl border border-white/30">
               <GraduationCap className="w-9 h-9 text-white" />
             </div>
-            <h1 className="text-3xl font-bold mb-2">WowCap</h1>
+            <h1 className="text-3xl font-bold mb-2">MeritCap</h1>
             <p className="text-base text-blue-100">Your Gateway to Global Education</p>
           </div>
 
@@ -176,7 +176,7 @@ export default function LoginPage() {
               <GraduationCap className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              WowCap
+              MeritCap
             </h1>
             <p className="text-gray-600 text-sm mt-1">Your Gateway to Global Education</p>
           </div>
@@ -278,7 +278,7 @@ export default function LoginPage() {
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-xs text-gray-500">
-              © 2025 WowCap. All rights reserved.
+              © 2025 MeritCap. All rights reserved.
             </p>
           </div>
         </div>

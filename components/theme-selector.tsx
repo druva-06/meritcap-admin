@@ -27,7 +27,7 @@ export function ThemeSelector() {
 
   useEffect(() => {
     // Load saved theme on mount
-    const savedTheme = localStorage.getItem("wowcap-theme") as Theme
+    const savedTheme = localStorage.getItem("meritcap-theme") as Theme
     if (savedTheme && themes.find((t) => t.id === savedTheme)) {
       setCurrentTheme(savedTheme)
       applyTheme(savedTheme)
@@ -45,7 +45,7 @@ export function ThemeSelector() {
   const handleThemeChange = (theme: Theme) => {
     setCurrentTheme(theme)
     applyTheme(theme)
-    localStorage.setItem("wowcap-theme", theme)
+    localStorage.setItem("meritcap-theme", theme)
   }
 
   return (

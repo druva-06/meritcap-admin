@@ -263,7 +263,7 @@ export default function CollegeDashboardPage() {
               <GraduationCap className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">WowCap</h1>
+              <h1 className="text-xl font-bold">MeritCap</h1>
               <p className="text-xs text-purple-100">College Portal</p>
             </div>
           </div>

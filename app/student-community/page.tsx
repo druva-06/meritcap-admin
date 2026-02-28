@@ -1192,7 +1192,7 @@ export default function StudentCommunityPage() {
       avatar: "RK",
       degree: "Study Abroad Counselor",
       experience: "15+ years",
-      institution: "WowCap Education",
+      institution: "MeritCap Education",
       type: "faculty",
       contributions: 8,
       expertise: ["USA", "Canada", "Admissions"],

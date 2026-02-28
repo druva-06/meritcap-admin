@@ -13,7 +13,7 @@ interface ChatRequest {
 
 // System prompts for different contexts
 const getSystemPrompt = (context: string): string => {
-  const basePrompt = `You are EduBot, a friendly and knowledgeable study abroad assistant for WowCap Education Platform. You help students with:
+  const basePrompt = `You are EduBot, a friendly and knowledgeable study abroad assistant for MeritCap Education Platform. You help students with:
 - University selection and applications
 - Document preparation (SOP, LOR, transcripts)
 - Test preparation (IELTS, TOEFL, GRE, GMAT)

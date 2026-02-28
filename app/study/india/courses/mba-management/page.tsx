@@ -660,7 +660,7 @@ export default function MBAManagementPage() {
                 specialization: "MBA Finance",
                 salaryHike: "350%",
                 story:
-                  "WowCap's guidance helped me get into IIM-B. Today, I'm leading financial strategies for global clients.",
+                  "MeritCap's guidance helped me get into IIM-B. Today, I'm leading financial strategies for global clients.",
                 image: "/placeholder.svg?height=100&width=100&text=RG",
               },
               {
@@ -717,7 +717,7 @@ export default function MBAManagementPage() {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Start Your MBA Journey?</h2>
             <p className="text-xl text-teal-100 mb-8 leading-relaxed">
-              Join thousands of successful MBA graduates who chose WowCap for their business education journey. Get
+              Join thousands of successful MBA graduates who chose MeritCap for their business education journey. Get
               expert guidance, college selection support, and career counseling.
             </p>
 
