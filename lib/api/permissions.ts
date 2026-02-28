@@ -39,6 +39,27 @@ export interface UserPermissionsResponseDto {
 }
 
 /**
+ * Permission Hierarchy DTOs
+ */
+export interface FeatureDto {
+  feature: string
+  permissionId: number
+  permissionName: string
+  displayName: string
+  isActive: boolean
+}
+
+export interface SubmenuDto {
+  submenu: string | null
+  features: FeatureDto[]
+}
+
+export interface PermissionHierarchyDto {
+  dashboard: string
+  submenus: SubmenuDto[]
+}
+
+/**
  * Fetch all permissions
  */
 export async function getAllPermissions(): Promise<PermissionResponseDto[]> {
@@ -216,4 +237,68 @@ export async function revokePermissionsFromRole(roleId: number, permissionIds: n
   if (!response.success) {
     throw new Error(response.message || "Failed to revoke permissions from role")
   }
+}
+
+/**
+ * ===== HIERARCHY API FUNCTIONS =====
+ */
+
+/**
+ * Get all unique dashboards
+ */
+export async function getAllDashboards(): Promise<string[]> {
+  const response = await api.get<string[]>("/api/permissions/hierarchy/dashboards")
+  
+  if (!response.success) {
+    throw new Error(response.message || "Failed to fetch dashboards")
+  }
+  
+  return response.data || []
+}
+
+/**
+ * Get submenus for a specific dashboard
+ */
+export async function getSubmenusByDashboard(dashboard: string): Promise<string[]> {
+  const response = await api.get<string[]>(`/api/permissions/hierarchy/dashboards/${encodeURIComponent(dashboard)}/submenus`)
+  
+  if (!response.success) {
+    throw new Error(response.message || "Failed to fetch submenus")
+  }
+  
+  return response.data || []
+}
+
+/**
+ * Get features for a specific dashboard and optionally submenu
+ */
+export async function getFeaturesByDashboardAndSubmenu(
+  dashboard: string, 
+  submenu?: string
+): Promise<string[]> {
+  let url = `/api/permissions/hierarchy/dashboards/${encodeURIComponent(dashboard)}/features`
+  if (submenu) {
+    url += `?submenu=${encodeURIComponent(submenu)}`
+  }
+  
+  const response = await api.get<string[]>(url)
+  
+  if (!response.success) {
+    throw new Error(response.message || "Failed to fetch features")
+  }
+  
+  return response.data || []
+}
+
+/**
+ * Get complete permission hierarchy tree
+ */
+export async function getPermissionHierarchy(): Promise<PermissionHierarchyDto[]> {
+  const response = await api.get<PermissionHierarchyDto[]>("/api/permissions/hierarchy")
+  
+  if (!response.success) {
+    throw new Error(response.message || "Failed to fetch permission hierarchy")
+  }
+  
+  return response.data || []
 }
