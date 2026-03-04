@@ -152,6 +152,12 @@ export const MENU_CONFIG: MenuItem[] = [
         href: "/admin/colleges/accounts",
         permissions: ["COLLEGE_VIEW_ALL", "COLLEGE_VIEW_OWN_PROFILE"],
       },
+      {
+        id: "bulk-upload",
+        label: "Bulk Upload",
+        href: "/admin/colleges/bulk-upload",
+        permissions: ["COLLEGE_VIEW_ALL", "COLLEGE_MANAGE_COURSES"],
+      },
     ],
   },
   {
