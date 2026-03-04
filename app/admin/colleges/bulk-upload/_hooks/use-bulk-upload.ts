@@ -149,6 +149,11 @@ export function useBulkUpload(): UseBulkUploadReturn {
             const json = await res.json();
             if (res.ok && json.success) {
                 const serverJobs: JobStatus[] = json.response;
+                // Server returns LocalDateTime (UTC) without 'Z' suffix.
+                // Append 'Z' so JS Date parses it as UTC, not local time.
+                const parseUtc = (dt: string | null) =>
+                    dt ? new Date(dt.endsWith("Z") ? dt : dt + "Z") : new Date();
+
                 const mapped: UploadJob[] = serverJobs.map((sj) => ({
                     id: sj.jobId,
                     fileName: sj.fileName || "Unknown",
@@ -158,14 +163,10 @@ export function useBulkUpload(): UseBulkUploadReturn {
                     totalRecords: sj.totalRecords,
                     processedRecords: sj.processedRecords,
                     errorMessage: sj.errorMessage,
-                    startedAt: sj.createdAt
-                        ? new Date(sj.createdAt)
-                        : new Date(),
+                    startedAt: parseUtc(sj.createdAt),
                     completedAt:
                         sj.status === "COMPLETED" || sj.status === "FAILED"
-                            ? sj.updatedAt
-                                ? new Date(sj.updatedAt)
-                                : new Date()
+                            ? parseUtc(sj.updatedAt)
                             : null,
                 }));
                 setJobs(mapped);
