@@ -8,6 +8,17 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
   ArrowLeft,
   Phone,
   Mail,
@@ -26,11 +37,41 @@ import {
   Award,
   Briefcase,
   MessageSquare,
+  Trash2,
+  Loader2,
 } from "lucide-react"
+import { deleteUser } from "@/lib/api/users"
+import { toast } from "@/hooks/use-toast"
 
 export default function StudentDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("overview")
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+
+  // Handle student deletion
+  const handleDeleteStudent = async () => {
+    try {
+      setIsDeleting(true)
+      await deleteUser(Number(params.id))
+      toast({
+        title: "Student Deleted",
+        description: "The student has been successfully deleted.",
+      })
+      // Redirect to students list after successful deletion
+      router.push("/admin/students")
+    } catch (error: any) {
+      console.error("Error deleting student:", error)
+      toast({
+        title: "Error",
+        description: error?.message || "Failed to delete student. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsDeleting(false)
+      setShowDeleteDialog(false)
+    }
+  }
 
   // Sample student data
   const student = {
@@ -337,6 +378,44 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
             <Edit className="w-4 h-4" />
             Edit
           </Button>
+          <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 text-red-600 border-red-600 hover:bg-red-50 bg-transparent"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Student</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete <strong>{student.name}</strong>? This action cannot be undone.
+                  All associated data including documents, applications, and records will be permanently removed.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteStudent}
+                  disabled={isDeleting}
+                  className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete Student"
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 
