@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,9 +17,21 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import Link from "next/link"
-import { Search, Download, UserPlus, Eye, FileText, Upload, CheckCircle, AlertCircle, Calendar, Phone, Mail, GraduationCap, Users, MessageSquare, Briefcase, BookOpen, Target, TrendingUp, ExternalLink, Award, ClipboardCheck, DollarSign, MapPin, Building, Loader2 } from 'lucide-react'
+import { Search, Download, UserPlus, Eye, FileText, Upload, CheckCircle, AlertCircle, Calendar, Phone, Mail, GraduationCap, Users, MessageSquare, Briefcase, BookOpen, Target, TrendingUp, ExternalLink, Award, ClipboardCheck, DollarSign, MapPin, Building, Loader2, Trash2 } from 'lucide-react'
 import { api } from "@/lib/api-client"
+import { deleteUser } from "@/lib/api/users"
+import { toast } from "@/hooks/use-toast"
 
 // Types for API response
 interface User {
@@ -45,7 +57,10 @@ interface PagedResponse {
 
 export default function AdminStudents() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedStudent, setSelectedStudent] = useState<any>(null)
+  const [selectedStudent, setSelectedStudent] = useState<User | null>(null)
+  const [studentToDelete, setStudentToDelete] = useState<User | null>(null)
+  const [deleteUserDialogOpen, setDeleteUserDialogOpen] = useState(false)
+  const [isDeletingUser, setIsDeletingUser] = useState(false)
   const [currentPage, setCurrentPage] = useState(0) // Backend uses 0-indexed pages
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [students, setStudents] = useState<User[]>([])
@@ -54,48 +69,102 @@ export default function AdminStudents() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Fetch students from API
-  useEffect(() => {
-    const fetchStudents = async () => {
-      setLoading(true)
-      setError(null)
+  const fetchStudents = useCallback(async (page: number = currentPage, size: number = itemsPerPage) => {
+    setLoading(true)
+    setError(null)
 
-      try {
-        const result = await api.get<PagedResponse>(
-          `/api/user/by-role?role=STUDENT&page=${currentPage}&size=${itemsPerPage}`
-        )
+    try {
+      const result = await api.get<any>(
+        `/api/user/by-role?role=STUDENT&page=${page}&size=${size}`
+      )
 
-        if (result.success && result.data) {
-          setStudents(result.data.users)
-          setTotalPages(result.data.total_pages)
-          setTotalElements(result.data.total_elements)
-        } else {
-          setError(result.message || "Failed to fetch students")
-        }
-      } catch (err) {
-        setError("An error occurred while fetching students")
-        console.error("Error fetching students:", err)
-      } finally {
-        setLoading(false)
+      if (result.success && result.data) {
+        const responseData = result.data?.response || result.data
+        const users = Array.isArray(responseData?.users) ? responseData.users : []
+
+        setStudents(users)
+        setTotalPages(typeof responseData?.total_pages === "number" ? responseData.total_pages : 0)
+        setTotalElements(typeof responseData?.total_elements === "number" ? responseData.total_elements : users.length)
+      } else {
+        setStudents([])
+        setTotalPages(0)
+        setTotalElements(0)
+        setError(result.message || "Failed to fetch students")
       }
+    } catch (err) {
+      setStudents([])
+      setTotalPages(0)
+      setTotalElements(0)
+      setError("An error occurred while fetching students")
+      console.error("Error fetching students:", err)
+    } finally {
+      setLoading(false)
     }
-
-    fetchStudents()
   }, [currentPage, itemsPerPage])
 
+  // Fetch students from API
+  useEffect(() => {
+    void fetchStudents()
+  }, [fetchStudents])
+
   // Filter students locally by search term
-  const filteredStudents = students.filter((student) => {
+  const filteredStudents = (students || []).filter((student) => {
+    if (!student) return false
     if (!searchTerm) return true
 
     const searchLower = searchTerm.toLowerCase()
-    const fullName = `${student.first_name} ${student.last_name}`.toLowerCase()
+    const fullName = `${student.first_name || ''} ${student.last_name || ''}`.toLowerCase()
 
     return (
       fullName.includes(searchLower) ||
-      student.email.toLowerCase().includes(searchLower) ||
-      student.username.toLowerCase().includes(searchLower)
+      (student.email || '').toLowerCase().includes(searchLower) ||
+      (student.username || '').toLowerCase().includes(searchLower)
     )
   })
+
+  const openDeleteUserDialog = (student: User) => {
+    setStudentToDelete(student)
+    setDeleteUserDialogOpen(true)
+  }
+
+  const handleDeleteUser = async () => {
+    if (!studentToDelete) return
+
+    try {
+      setIsDeletingUser(true)
+      await deleteUser(studentToDelete.user_id)
+
+      toast({
+        title: "Success",
+        description: "User deleted successfully",
+      })
+
+      if (selectedStudent?.user_id === studentToDelete.user_id) {
+        setSelectedStudent(null)
+      }
+
+      setDeleteUserDialogOpen(false)
+      setStudentToDelete(null)
+
+      const nextTotalElements = Math.max(0, totalElements - 1)
+      const maxPageAfterDelete = Math.max(0, Math.ceil(nextTotalElements / itemsPerPage) - 1)
+      const targetPage = Math.min(currentPage, maxPageAfterDelete)
+
+      if (targetPage !== currentPage) {
+        setCurrentPage(targetPage)
+      } else {
+        await fetchStudents(targetPage, itemsPerPage)
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to delete user",
+        variant: "destructive",
+      })
+    } finally {
+      setIsDeletingUser(false)
+    }
+  }
 
   // Generate page numbers for pagination (adjusted for 0-indexed pages)
   const generatePageNumbers = () => {
@@ -320,6 +389,17 @@ export default function AdminStudents() {
                               >
                                 <Eye className="w-4 h-4" />
                               </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  openDeleteUserDialog(student)
+                                }}
+                                className="hover:bg-red-100 text-red-600"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
                             </div>
                           </td>
                         </tr>
@@ -457,12 +537,22 @@ export default function AdminStudents() {
                   </div>
 
                   <div className="pt-4 border-t">
-                    <Button className="w-full" variant="outline" asChild>
-                      <Link href={`/admin/students/${selectedStudent.user_id}`}>
-                        View Full Profile
-                        <ExternalLink className="w-4 h-4 ml-2" />
-                      </Link>
-                    </Button>
+                    <div className="space-y-2">
+                      <Button className="w-full" variant="outline" asChild>
+                        <Link href={`/admin/students/${selectedStudent.user_id}`}>
+                          View Full Profile
+                          <ExternalLink className="w-4 h-4 ml-2" />
+                        </Link>
+                      </Button>
+                      <Button
+                        className="w-full border-red-300 text-red-600 hover:bg-red-50"
+                        variant="outline"
+                        onClick={() => openDeleteUserDialog(selectedStudent)}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete User
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -477,6 +567,47 @@ export default function AdminStudents() {
           )}
         </div>
       </div>
+
+      <AlertDialog open={deleteUserDialogOpen} onOpenChange={setDeleteUserDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this user? This action cannot be undone.
+              {studentToDelete ? (
+                <>
+                  <br />
+                  <span className="font-medium text-red-700">
+                    {studentToDelete.first_name} {studentToDelete.last_name} ({studentToDelete.email})
+                  </span>
+                </>
+              ) : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={isDeletingUser}
+              onClick={() => setStudentToDelete(null)}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteUser}
+              disabled={isDeletingUser}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isDeletingUser ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete User"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
