@@ -20,6 +20,7 @@ import {
   Phone,
   MessageSquare,
   Shield,
+  FileCheck,
 } from "lucide-react"
 
 export interface MenuItem {
@@ -351,6 +352,40 @@ export const MENU_CONFIG: MenuItem[] = [
     ],
   },
   {
+    id: "document-config",
+    label: "Document Config",
+    icon: FileCheck,
+    href: "/admin/document-config",
+    permissions: ["MENU_DOCUMENT_CONFIG", "DOCUMENT_CONFIG_VIEW"],
+    hasSubmenu: true,
+    submenu: [
+      {
+        id: "doc-config-document-types",
+        label: "Document Types",
+        href: "/admin/document-config/document-types",
+        permissions: ["DOCUMENT_CONFIG_VIEW"],
+      },
+      {
+        id: "doc-config-profile-requirements",
+        label: "Profile Requirements",
+        href: "/admin/document-config/profile-requirements",
+        permissions: ["DOCUMENT_CONFIG_VIEW"],
+      },
+      {
+        id: "doc-config-country-requirements",
+        label: "Country Requirements",
+        href: "/admin/document-config/country-requirements",
+        permissions: ["DOCUMENT_CONFIG_VIEW"],
+      },
+      {
+        id: "doc-config-countries",
+        label: "Countries",
+        href: "/admin/document-config/countries",
+        permissions: ["DOCUMENT_CONFIG_VIEW"],
+      },
+    ],
+  },
+  {
     id: "settings",
     label: "Settings",
     icon: Settings,
@@ -540,4 +575,10 @@ export const FEATURE_PERMISSIONS = {
   DOCUMENT_UPLOAD: ["DOCUMENT_UPLOAD"],
   DOCUMENT_DELETE: ["DOCUMENT_DELETE"],
   DOCUMENT_DOWNLOAD: ["DOCUMENT_DOWNLOAD"],
+
+  // Document Configuration features
+  DOCUMENT_CONFIG_VIEW: ["DOCUMENT_CONFIG_VIEW"],
+  DOCUMENT_CONFIG_CREATE: ["DOCUMENT_CONFIG_CREATE"],
+  DOCUMENT_CONFIG_EDIT: ["DOCUMENT_CONFIG_EDIT"],
+  DOCUMENT_CONFIG_DELETE: ["DOCUMENT_CONFIG_DELETE"],
 }
