@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
 import {
   Pagination,
   PaginationContent,
@@ -28,7 +26,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import Link from "next/link"
-import { Search, Download, UserPlus, Eye, FileText, Upload, CheckCircle, AlertCircle, Calendar, Phone, Mail, GraduationCap, Users, MessageSquare, Briefcase, BookOpen, Target, TrendingUp, ExternalLink, Award, ClipboardCheck, DollarSign, MapPin, Building, Loader2, Trash2 } from 'lucide-react'
+import { Search, Download, UserPlus, Eye, FileText, Phone, Mail, GraduationCap, Users, ExternalLink, Loader2, Trash2 } from 'lucide-react'
 import { api } from "@/lib/api-client"
 import { deleteUser } from "@/lib/api/users"
 import { toast } from "@/hooks/use-toast"
@@ -205,363 +203,364 @@ export default function AdminStudents() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-5">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
           {error}
         </div>
       )}
+
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Students</h1>
-          <p className="text-gray-600">Manage student profiles and services</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Students</h1>
+          <p className="text-sm text-gray-500">Manage student profiles and services</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700" asChild>
+        <Button className="bg-blue-600 hover:bg-blue-700 shrink-0" asChild>
           <Link href="/admin/students/new">
             <UserPlus className="w-4 h-4 mr-2" />
-            Add Student
+            <span className="hidden sm:inline">Add Student</span>
+            <span className="sm:hidden">Add</span>
           </Link>
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Students</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{totalElements}</p>
+                <p className="text-xs text-gray-500">Total</p>
+                <p className="text-xl font-bold text-gray-900">{totalElements}</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-blue-600" />
+              <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                <Users className="w-4 h-4 text-blue-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Counseling Clients</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">
-                  {students.length}
-                </p>
+                <p className="text-xs text-gray-500">This Page</p>
+                <p className="text-xl font-bold text-gray-900">{filteredStudents.length}</p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <GraduationCap className="w-6 h-6 text-green-600" />
+              <div className="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
+                <GraduationCap className="w-4 h-4 text-green-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Community Members</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">
-                  {currentPage + 1} / {totalPages || 1}
+                <p className="text-xs text-gray-500">Page</p>
+                <p className="text-xl font-bold text-gray-900">
+                  {currentPage + 1}<span className="text-xs font-normal text-gray-400">/{totalPages || 1}</span>
                 </p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Job Seekers</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">
-                  {itemsPerPage}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-                <Award className="w-6 h-6 text-amber-600" />
+              <div className="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
+                <FileText className="w-4 h-4 text-purple-600" />
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder="Search by name, email, username..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Button variant="outline">
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Search */}
+      <div className="flex gap-3">
+        <div className="relative flex-1">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Input
+            placeholder="Search by name, email, username..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <Button variant="outline" size="icon" className="shrink-0">
+          <Download className="w-4 h-4" />
+        </Button>
+      </div>
 
-      {/* Students Table */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>All Students ({filteredStudents.length})</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b">
-                    <tr>
-                      <th className="text-left p-4 text-sm font-semibold text-gray-700">Student Info</th>
-                      <th className="text-left p-4 text-sm font-semibold text-gray-700">Username</th>
-                      <th className="text-left p-4 text-sm font-semibold text-gray-700">Phone Number</th>
-                      <th className="text-left p-4 text-sm font-semibold text-gray-700">Role</th>
-                      <th className="text-left p-4 text-sm font-semibold text-gray-700">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loading ? (
+      {/* Main content: list + detail panel */}
+      <div className="flex flex-col lg:grid lg:grid-cols-3 gap-5">
+
+        {/* Student list — card on mobile, table on desktop */}
+        <div className="lg:col-span-2 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-gray-700">All Students ({filteredStudents.length})</h2>
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <span>Rows:</span>
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => {
+                  setItemsPerPage(Number(value))
+                  setCurrentPage(0)
+                }}
+              >
+                <SelectTrigger className="w-16 h-7 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {loading ? (
+            <Card>
+              <CardContent className="p-12 flex flex-col items-center gap-2">
+                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                <p className="text-sm text-gray-500">Loading students...</p>
+              </CardContent>
+            </Card>
+          ) : filteredStudents.length === 0 ? (
+            <Card>
+              <CardContent className="p-12 flex flex-col items-center gap-2 text-center">
+                <Users className="w-12 h-12 text-gray-300" />
+                <p className="text-gray-500 font-medium">No students found</p>
+                <p className="text-sm text-gray-400">
+                  {searchTerm ? "Try adjusting your search" : "No students available"}
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              {/* Desktop table */}
+              <Card className="hidden md:block overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[600px]">
+                    <thead className="bg-gray-50 border-b">
                       <tr>
-                        <td colSpan={5} className="p-12 text-center">
-                          <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-2" />
-                          <p className="text-gray-500">Loading students...</p>
-                        </td>
+                        <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wide">Student</th>
+                        <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wide">Username</th>
+                        <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wide">Phone</th>
+                        <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wide">Actions</th>
                       </tr>
-                    ) : filteredStudents.length === 0 ? (
-                      <tr>
-                        <td colSpan={5} className="p-12 text-center">
-                          <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                          <p className="text-gray-500 font-medium">No students found</p>
-                          <p className="text-sm text-gray-400 mt-1">
-                            {searchTerm ? "Try adjusting your search criteria" : "No students available"}
-                          </p>
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredStudents.map((student) => (
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {filteredStudents.map((student) => (
                         <tr
                           key={student.user_id}
-                          className="border-b hover:bg-blue-50 cursor-pointer"
+                          className={`hover:bg-blue-50 cursor-pointer transition-colors ${selectedStudent?.user_id === student.user_id ? "bg-blue-50" : ""}`}
                           onClick={() => setSelectedStudent(student)}
                         >
-                          <td className="p-4">
-                            <div>
-                              <p className="font-semibold text-gray-900">
-                                {student.first_name} {student.last_name}
-                              </p>
-                              <p className="text-sm text-gray-600">ID: {student.user_id}</p>
-                              <div className="flex items-center text-xs text-gray-500 mt-1">
-                                <Mail className="w-3 h-3 mr-1" />
-                                {student.email}
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-xs shrink-0">
+                                {(student.first_name?.[0] ?? "").toUpperCase()}{(student.last_name?.[0] ?? "").toUpperCase()}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-medium text-sm text-gray-900 truncate">
+                                  {student.first_name} {student.last_name}
+                                </p>
+                                <p className="text-xs text-gray-500 truncate">{student.email}</p>
                               </div>
                             </div>
                           </td>
-                          <td className="p-4">
-                            <p className="text-sm text-gray-900">{student.username}</p>
-                          </td>
-                          <td className="p-4">
-                            <div className="flex items-center text-sm text-gray-900">
-                              <Phone className="w-3 h-3 mr-1 text-gray-400" />
-                              {student.phone_number}
-                            </div>
-                          </td>
-                          <td className="p-4">
-                            <Badge className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-semibold px-3 py-1">
-                              {student.role}
-                            </Badge>
-                          </td>
-                          <td className="p-4">
-                            <div className="flex space-x-2">
+                          <td className="px-4 py-3 text-sm text-gray-700">{student.username}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">{student.phone_number}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex gap-1">
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setSelectedStudent(student)
-                                }}
-                                className="hover:bg-blue-100"
+                                className="h-7 w-7 p-0 hover:bg-blue-100"
+                                onClick={(e) => { e.stopPropagation(); setSelectedStudent(student) }}
+                                title="Quick view"
                               >
-                                <Eye className="w-4 h-4" />
+                                <Eye className="w-3.5 h-3.5" />
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  openDeleteUserDialog(student)
-                                }}
-                                className="hover:bg-red-100 text-red-600"
+                                className="h-7 w-7 p-0 hover:bg-red-100 text-red-600"
+                                onClick={(e) => { e.stopPropagation(); openDeleteUserDialog(student) }}
+                                title="Delete"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </Button>
                             </div>
                           </td>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination Controls */}
-              {!loading && totalElements > 0 && (
-                <div className="border-t px-6 py-4">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                    {/* Items per page selector and info */}
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">Rows per page:</span>
-                        <Select
-                          value={itemsPerPage.toString()}
-                          onValueChange={(value) => {
-                            setItemsPerPage(Number(value))
-                            setCurrentPage(0) // Reset to first page
-                          }}
-                        >
-                          <SelectTrigger className="w-20 h-9">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="10">10</SelectItem>
-                            <SelectItem value="25">25</SelectItem>
-                            <SelectItem value="50">50</SelectItem>
-                            <SelectItem value="100">100</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <span className="text-sm text-gray-600">
-                        Showing {currentPage * itemsPerPage + 1}-{Math.min((currentPage + 1) * itemsPerPage, totalElements)} of {totalElements}
-                      </span>
-                    </div>
-
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                      <Pagination>
-                        <PaginationContent>
-                          <PaginationItem>
-                            <PaginationPrevious
-                              onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
-                              className={currentPage === 0 ? "pointer-events-none opacity-50 cursor-not-allowed" : "cursor-pointer"}
-                            />
-                          </PaginationItem>
-
-                          {generatePageNumbers().map((page, index) => (
-                            <PaginationItem key={index}>
-                              {typeof page === 'number' ? (
-                                <PaginationLink
-                                  onClick={() => setCurrentPage(page)}
-                                  isActive={currentPage === page}
-                                  className="cursor-pointer"
-                                >
-                                  {page + 1}
-                                </PaginationLink>
-                              ) : (
-                                <PaginationEllipsis />
-                              )}
-                            </PaginationItem>
-                          ))}
-
-                          <PaginationItem>
-                            <PaginationNext
-                              onClick={() => setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1))}
-                              className={currentPage === totalPages - 1 ? "pointer-events-none opacity-50 cursor-not-allowed" : "cursor-pointer"}
-                            />
-                          </PaginationItem>
-                        </PaginationContent>
-                      </Pagination>
-                    )}
-                  </div>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
+              </Card>
+
+              {/* Mobile cards */}
+              <div className="md:hidden space-y-2">
+                {filteredStudents.map((student) => (
+                  <Card
+                    key={student.user_id}
+                    className={`cursor-pointer transition-colors hover:border-blue-300 ${selectedStudent?.user_id === student.user_id ? "border-blue-400 bg-blue-50/40" : ""}`}
+                    onClick={() => setSelectedStudent(student)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-sm shrink-0">
+                            {(student.first_name?.[0] ?? "").toUpperCase()}{(student.last_name?.[0] ?? "").toUpperCase()}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-semibold text-sm text-gray-900">
+                              {student.first_name} {student.last_name}
+                            </p>
+                            <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
+                              <Mail className="w-3 h-3 shrink-0" />
+                              <span className="truncate">{student.email}</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
+                              <Phone className="w-3 h-3 shrink-0" />
+                              <span>{student.phone_number}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-1 shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 hover:bg-red-100 text-red-500"
+                            onClick={(e) => { e.stopPropagation(); openDeleteUserDialog(student) }}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex gap-2">
+                        <Link
+                          href={`/admin/students/${student.user_id}`}
+                          className="flex-1"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Button variant="outline" size="sm" className="w-full h-8 text-xs">
+                            <ExternalLink className="w-3 h-3 mr-1" /> View Profile
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Pagination */}
+          {!loading && totalElements > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+              <p className="text-xs text-gray-500 order-2 sm:order-1">
+                Showing {Math.min(currentPage * itemsPerPage + 1, totalElements)}–{Math.min((currentPage + 1) * itemsPerPage, totalElements)} of {totalElements}
+              </p>
+              {totalPages > 1 && (
+                <Pagination className="order-1 sm:order-2">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+                        className={currentPage === 0 ? "pointer-events-none opacity-40 cursor-not-allowed" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                    {generatePageNumbers().map((page, index) => (
+                      <PaginationItem key={index}>
+                        {typeof page === 'number' ? (
+                          <PaginationLink
+                            onClick={() => setCurrentPage(page)}
+                            isActive={currentPage === page}
+                            className="cursor-pointer"
+                          >
+                            {page + 1}
+                          </PaginationLink>
+                        ) : (
+                          <PaginationEllipsis />
+                        )}
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1))}
+                        className={currentPage >= totalPages - 1 ? "pointer-events-none opacity-40 cursor-not-allowed" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          )}
         </div>
 
+        {/* Detail panel — sticky on desktop, inline on mobile */}
         <div className="lg:col-span-1">
           {selectedStudent ? (
-            <Card className="sticky top-24">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+            <Card className="lg:sticky lg:top-6">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center justify-between text-base">
                   <span>Student Details</span>
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedStudent(null)}>
+                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setSelectedStudent(null)}>
                     ✕
                   </Button>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-3">Personal Information</h3>
-                    <div className="space-y-3 text-sm">
-                      <div className="flex justify-between items-start">
-                        <span className="text-gray-600">Name:</span>
-                        <span className="font-medium text-right">{selectedStudent.first_name} {selectedStudent.last_name}</span>
-                      </div>
-                      <div className="flex justify-between items-start">
-                        <span className="text-gray-600">Username:</span>
-                        <span className="font-medium text-right">{selectedStudent.username}</span>
-                      </div>
-                      <div className="flex justify-between items-start">
-                        <span className="text-gray-600">Email:</span>
-                        <span className="font-medium text-xs text-right break-all">{selectedStudent.email}</span>
-                      </div>
-                      <div className="flex justify-between items-start">
-                        <span className="text-gray-600">Phone:</span>
-                        <span className="font-medium text-right">{selectedStudent.phone_number}</span>
-                      </div>
-                      <div className="flex justify-between items-start">
-                        <span className="text-gray-600">User ID:</span>
-                        <span className="font-medium text-right">{selectedStudent.user_id}</span>
-                      </div>
-                      <div className="flex justify-between items-start">
-                        <span className="text-gray-600">Role:</span>
-                        <Badge className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold px-3 py-1">{selectedStudent.role}</Badge>
-                      </div>
-                      {selectedStudent.profile_picture && (
-                        <div className="flex justify-between items-start">
-                          <span className="text-gray-600">Profile:</span>
-                          <img
-                            src={selectedStudent.profile_picture}
-                            alt="Profile"
-                            className="w-16 h-16 rounded-full object-cover"
-                          />
-                        </div>
-                      )}
-                    </div>
+              <CardContent className="space-y-4">
+                {/* Avatar + name */}
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-base shrink-0">
+                    {(selectedStudent.first_name?.[0] ?? "").toUpperCase()}{(selectedStudent.last_name?.[0] ?? "").toUpperCase()}
                   </div>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-gray-900 truncate">{selectedStudent.first_name} {selectedStudent.last_name}</p>
+                    <Badge className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs px-2 py-0.5 mt-0.5">
+                      {selectedStudent.role}
+                    </Badge>
+                  </div>
+                </div>
 
-                  <div className="pt-4 border-t">
-                    <div className="space-y-2">
-                      <Button className="w-full" variant="outline" asChild>
-                        <Link href={`/admin/students/${selectedStudent.user_id}`}>
-                          View Full Profile
-                          <ExternalLink className="w-4 h-4 ml-2" />
-                        </Link>
-                      </Button>
-                      <Button
-                        className="w-full border-red-300 text-red-600 hover:bg-red-50"
-                        variant="outline"
-                        onClick={() => openDeleteUserDialog(selectedStudent)}
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete User
-                      </Button>
+                {/* Details */}
+                <div className="space-y-2.5 text-sm">
+                  {[
+                    { label: "Email", value: selectedStudent.email },
+                    { label: "Phone", value: selectedStudent.phone_number },
+                    { label: "Username", value: selectedStudent.username },
+                    { label: "ID", value: `#${selectedStudent.user_id}` },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="flex justify-between gap-2">
+                      <span className="text-gray-500 shrink-0">{label}</span>
+                      <span className="font-medium text-right text-xs break-all">{value}</span>
                     </div>
-                  </div>
+                  ))}
+                </div>
+
+                {/* Actions */}
+                <div className="pt-2 border-t space-y-2">
+                  <Button className="w-full" variant="outline" size="sm" asChild>
+                    <Link href={`/admin/students/${selectedStudent.user_id}`}>
+                      <ExternalLink className="w-3.5 h-3.5 mr-1.5" /> View Full Profile
+                    </Link>
+                  </Button>
+                  <Button
+                    className="w-full text-red-600 border-red-200 hover:bg-red-50"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => openDeleteUserDialog(selectedStudent)}
+                  >
+                    <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Delete Student
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           ) : (
-            <Card className="sticky top-24">
-              <CardContent className="p-12 text-center">
-                <GraduationCap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">Select a student to view details</p>
+            <Card className="lg:sticky lg:top-6 hidden lg:block">
+              <CardContent className="p-10 flex flex-col items-center gap-3 text-center">
+                <GraduationCap className="w-12 h-12 text-gray-200" />
+                <p className="text-sm text-gray-400">Select a student to view details</p>
               </CardContent>
             </Card>
           )}
