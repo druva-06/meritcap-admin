@@ -47,9 +47,9 @@ import {
 
 export default function CountryRequirementsPage() {
   const { hasPermission } = usePermissions()
-  const canCreate = hasPermission("DOCUMENT_CONFIG_CREATE")
-  const canEdit = hasPermission("DOCUMENT_CONFIG_EDIT")
-  const canDelete = hasPermission("DOCUMENT_CONFIG_DELETE")
+  const canCreate = hasPermission("COUNTRY_REQ_CREATE")
+  const canEdit = hasPermission("COUNTRY_REQ_EDIT")
+  const canDelete = hasPermission("COUNTRY_REQ_DELETE")
 
   const [countries, setCountries] = useState<Country[]>([])
   const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([])

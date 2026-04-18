@@ -46,6 +46,7 @@ import {
   ExternalLink,
 } from "lucide-react"
 import { deleteUser } from "@/lib/api/users"
+import { usePermissions } from "@/lib/permissions-context"
 import {
   getStudentSummary,
   getStudentDocuments,
@@ -579,12 +580,25 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const router = useRouter()
   const studentId = Number(params.id)
 
+  const { hasPermission } = usePermissions()
+  const canViewApplications = hasPermission("APPLICATION_VIEW")
+  const canViewDocuments    = hasPermission("STUDENT_VIEW_DOCUMENTS")
+  const canViewWishlist     = hasPermission("STUDENT_VIEW_DETAILS")
+  const canDelete           = hasPermission("STUDENT_DELETE")
+
   const [summary, setSummary] = useState<StudentSummary | null>(null)
   const [summaryLoading, setSummaryLoading] = useState(true)
   const [summaryError, setSummaryError] = useState<string | null>(null)
 
   const [activeTab, setActiveTab] = useState("overview")
   const [isDeleting, setIsDeleting] = useState(false)
+
+  // Reset to overview if the active tab becomes inaccessible due to permissions
+  useEffect(() => {
+    if (activeTab === "applications" && !canViewApplications) setActiveTab("overview")
+    if (activeTab === "documents" && !canViewDocuments) setActiveTab("overview")
+    if (activeTab === "wishlist" && !canViewWishlist) setActiveTab("overview")
+  }, [activeTab, canViewApplications, canViewDocuments, canViewWishlist])
 
   const loadSummary = useCallback(async () => {
     setSummaryLoading(true)
@@ -707,33 +721,35 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2 shrink-0">
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/5">
-                        <Trash2 className="h-4 w-4 mr-1" /> Delete
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Student</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will permanently delete {fullName}&apos;s account and all associated data. This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={handleDelete}
-                          disabled={isDeleting}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Delete"}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
+                {canDelete && (
+                  <div className="flex items-center gap-2 shrink-0">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/5">
+                          <Trash2 className="h-4 w-4 mr-1" /> Delete
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Student</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete {fullName}&apos;s account and all associated data. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleDelete}
+                            disabled={isDeleting}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Delete"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -741,33 +757,39 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4 sm:w-auto sm:inline-flex">
+          <TabsList className="inline-flex flex-wrap h-auto">
             <TabsTrigger value="overview" className="flex items-center gap-1.5">
               <User className="h-4 w-4" />
               <span className="hidden sm:inline">Overview</span>
             </TabsTrigger>
-            <TabsTrigger value="applications" className="flex items-center gap-1.5">
-              <Send className="h-4 w-4" />
-              <span className="hidden sm:inline">Applications</span>
-              {summary && summary.totalApplications > 0 && (
-                <Badge variant="secondary" className="ml-1 hidden sm:inline-flex">
-                  {summary.totalApplications}
-                </Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="documents" className="flex items-center gap-1.5">
-              <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">Documents</span>
-              {summary && summary.pendingDocuments > 0 && (
-                <Badge className="ml-1 bg-yellow-100 text-yellow-800 hidden sm:inline-flex">
-                  {summary.pendingDocuments}
-                </Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="wishlist" className="flex items-center gap-1.5">
-              <Heart className="h-4 w-4" />
-              <span className="hidden sm:inline">Wishlist</span>
-            </TabsTrigger>
+            {canViewApplications && (
+              <TabsTrigger value="applications" className="flex items-center gap-1.5">
+                <Send className="h-4 w-4" />
+                <span className="hidden sm:inline">Applications</span>
+                {summary && summary.totalApplications > 0 && (
+                  <Badge variant="secondary" className="ml-1 hidden sm:inline-flex">
+                    {summary.totalApplications}
+                  </Badge>
+                )}
+              </TabsTrigger>
+            )}
+            {canViewDocuments && (
+              <TabsTrigger value="documents" className="flex items-center gap-1.5">
+                <FileText className="h-4 w-4" />
+                <span className="hidden sm:inline">Documents</span>
+                {summary && summary.pendingDocuments > 0 && (
+                  <Badge className="ml-1 bg-yellow-100 text-yellow-800 hidden sm:inline-flex">
+                    {summary.pendingDocuments}
+                  </Badge>
+                )}
+              </TabsTrigger>
+            )}
+            {canViewWishlist && (
+              <TabsTrigger value="wishlist" className="flex items-center gap-1.5">
+                <Heart className="h-4 w-4" />
+                <span className="hidden sm:inline">Wishlist</span>
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="overview" className="mt-6">
@@ -778,17 +800,23 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
             )}
           </TabsContent>
 
-          <TabsContent value="applications" className="mt-6">
-            <ApplicationsTab studentId={studentId} />
-          </TabsContent>
+          {canViewApplications && (
+            <TabsContent value="applications" className="mt-6">
+              <ApplicationsTab studentId={studentId} />
+            </TabsContent>
+          )}
 
-          <TabsContent value="documents" className="mt-6">
-            <DocumentsTab studentId={studentId} />
-          </TabsContent>
+          {canViewDocuments && (
+            <TabsContent value="documents" className="mt-6">
+              <DocumentsTab studentId={studentId} />
+            </TabsContent>
+          )}
 
-          <TabsContent value="wishlist" className="mt-6">
-            <WishlistTab studentId={studentId} />
-          </TabsContent>
+          {canViewWishlist && (
+            <TabsContent value="wishlist" className="mt-6">
+              <WishlistTab studentId={studentId} />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </div>

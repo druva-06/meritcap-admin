@@ -87,7 +87,7 @@ export const MENU_CONFIG: MenuItem[] = [
     label: "Students",
     icon: GraduationCap,
     href: "/admin/students",
-    permissions: ["STUDENT_VIEW_ALL", "STUDENT_VIEW_ASSIGNED", "STUDENT_VIEW_REFERRED"],
+    permissions: ["STUDENT_VIEW"],
   },
   {
     id: "applications",
@@ -356,32 +356,32 @@ export const MENU_CONFIG: MenuItem[] = [
     label: "Document Config",
     icon: FileCheck,
     href: "/admin/document-config",
-    permissions: ["MENU_DOCUMENT_CONFIG", "DOCUMENT_CONFIG_VIEW"],
+    permissions: ["DOCUMENT_TYPE_VIEW", "PROFILE_REQ_VIEW", "COUNTRY_REQ_VIEW", "COUNTRY_CONFIG_VIEW"],
     hasSubmenu: true,
     submenu: [
       {
         id: "doc-config-document-types",
         label: "Document Types",
         href: "/admin/document-config/document-types",
-        permissions: ["DOCUMENT_CONFIG_VIEW"],
+        permissions: ["DOCUMENT_TYPE_VIEW"],
       },
       {
         id: "doc-config-profile-requirements",
         label: "Profile Requirements",
         href: "/admin/document-config/profile-requirements",
-        permissions: ["DOCUMENT_CONFIG_VIEW"],
+        permissions: ["PROFILE_REQ_VIEW"],
       },
       {
         id: "doc-config-country-requirements",
         label: "Country Requirements",
         href: "/admin/document-config/country-requirements",
-        permissions: ["DOCUMENT_CONFIG_VIEW"],
+        permissions: ["COUNTRY_REQ_VIEW"],
       },
       {
         id: "doc-config-countries",
         label: "Countries",
         href: "/admin/document-config/countries",
-        permissions: ["DOCUMENT_CONFIG_VIEW"],
+        permissions: ["COUNTRY_CONFIG_VIEW"],
       },
     ],
   },
@@ -426,7 +426,7 @@ export const FEATURE_PERMISSIONS = {
   AI_CALLING: ["AI_CALLING_MAKE_CALL", "AI_CALLING_VIEW_HISTORY", "AI_CALLING_VIEW_ANALYTICS"],
 
   // Student features
-  STUDENT_VIEW: ["STUDENT_VIEW_ALL", "STUDENT_VIEW_ASSIGNED", "STUDENT_VIEW_REFERRED"],
+  STUDENT_VIEW: ["STUDENT_VIEW"],
   STUDENT_CREATE: ["STUDENT_CREATE"],
   STUDENT_EDIT: ["STUDENT_EDIT"],
   STUDENT_DELETE: ["STUDENT_DELETE"],
@@ -440,7 +440,7 @@ export const FEATURE_PERMISSIONS = {
   STUDENT_MANAGE_PROFILE: ["STUDENT_MANAGE_PROFILE"],
 
   // Application features
-  APPLICATION_VIEW: ["APPLICATION_VIEW_ALL", "APPLICATION_VIEW_ASSIGNED", "APPLICATION_VIEW_REFERRED", "APPLICATION_VIEW_OWN"],
+  APPLICATION_VIEW: ["APPLICATION_VIEW"],
   APPLICATION_CREATE: ["APPLICATION_CREATE"],
   APPLICATION_EDIT: ["APPLICATION_EDIT"],
   APPLICATION_DELETE: ["APPLICATION_DELETE"],
@@ -576,9 +576,21 @@ export const FEATURE_PERMISSIONS = {
   DOCUMENT_DELETE: ["DOCUMENT_DELETE"],
   DOCUMENT_DOWNLOAD: ["DOCUMENT_DOWNLOAD"],
 
-  // Document Configuration features
-  DOCUMENT_CONFIG_VIEW: ["DOCUMENT_CONFIG_VIEW"],
-  DOCUMENT_CONFIG_CREATE: ["DOCUMENT_CONFIG_CREATE"],
-  DOCUMENT_CONFIG_EDIT: ["DOCUMENT_CONFIG_EDIT"],
-  DOCUMENT_CONFIG_DELETE: ["DOCUMENT_CONFIG_DELETE"],
+  // Document Configuration features — per submenu
+  DOCUMENT_TYPE_VIEW:   ["DOCUMENT_TYPE_VIEW"],
+  DOCUMENT_TYPE_CREATE: ["DOCUMENT_TYPE_CREATE"],
+  DOCUMENT_TYPE_EDIT:   ["DOCUMENT_TYPE_EDIT"],
+  DOCUMENT_TYPE_DELETE: ["DOCUMENT_TYPE_DELETE"],
+  PROFILE_REQ_VIEW:     ["PROFILE_REQ_VIEW"],
+  PROFILE_REQ_CREATE:   ["PROFILE_REQ_CREATE"],
+  PROFILE_REQ_EDIT:     ["PROFILE_REQ_EDIT"],
+  PROFILE_REQ_DELETE:   ["PROFILE_REQ_DELETE"],
+  COUNTRY_REQ_VIEW:     ["COUNTRY_REQ_VIEW"],
+  COUNTRY_REQ_CREATE:   ["COUNTRY_REQ_CREATE"],
+  COUNTRY_REQ_EDIT:     ["COUNTRY_REQ_EDIT"],
+  COUNTRY_REQ_DELETE:   ["COUNTRY_REQ_DELETE"],
+  COUNTRY_CONFIG_VIEW:   ["COUNTRY_CONFIG_VIEW"],
+  COUNTRY_CONFIG_CREATE: ["COUNTRY_CONFIG_CREATE"],
+  COUNTRY_CONFIG_EDIT:   ["COUNTRY_CONFIG_EDIT"],
+  COUNTRY_CONFIG_DELETE: ["COUNTRY_CONFIG_DELETE"],
 }
