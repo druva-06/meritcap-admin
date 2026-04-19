@@ -1,251 +1,126 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import { ArrowLeft, User, Search, UserCheck, TrendingUp, Target } from "lucide-react"
+import {
+  ArrowLeft,
+  User,
+  UserCheck,
+  Target,
+  RefreshCw,
+  Shuffle,
+  CheckCircle,
+  Loader2,
+  ExternalLink,
+} from "lucide-react"
+import { getCounselorWorkload, assignLeadsRoundRobin } from "@/lib/api/leads"
+import type { CounselorWorkload, RoundRobinResult } from "@/lib/api/leads"
+import { apiRequest } from "@/lib/api-client"
+
+function formatRelativeTime(iso: string | null): string {
+  if (!iso) return "Never"
+  const diff = Date.now() - new Date(iso).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 60) return `${mins}m ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h ago`
+  return `${Math.floor(hours / 24)}d ago`
+}
+
+function WorkloadBar({ value, max, color }: { value: number; max: number; color: string }) {
+  const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0
+  return (
+    <div className="w-full bg-gray-100 rounded-full h-1.5">
+      <div className={`h-1.5 rounded-full ${color}`} style={{ width: `${pct}%` }} />
+    </div>
+  )
+}
+
+function StatusDot({ color, count, label }: { color: string; count: number; label: string }) {
+  if (count === 0) return null
+  return (
+    <div className="flex items-center gap-1 text-xs">
+      <span className={`w-2 h-2 rounded-full ${color}`} />
+      <span className="text-gray-600">{count} {label}</span>
+    </div>
+  )
+}
 
 export default function LeadAssignmentPage() {
   const router = useRouter()
-  const [selectedLeads, setSelectedLeads] = useState<string[]>([])
-  const [selectedCounselor, setSelectedCounselor] = useState("")
-  const [searchQuery, setSearchQuery] = useState("")
 
-  // Sample counselors data
-  const counselors = [
-    {
-      id: "1",
-      name: "Amit Counselor",
-      email: "amit@meritcap.com",
-      role: "Senior Counselor",
-      specialization: "USA & Canada",
-      activeLeads: 12,
-      maxCapacity: 20,
-      conversionRate: 85,
-      avgResponseTime: "2 hours",
-      status: "Available",
-      performance: "Excellent",
-    },
-    {
-      id: "2",
-      name: "Priya Counselor",
-      email: "priya@meritcap.com",
-      role: "Senior Counselor",
-      specialization: "UK & Europe",
-      activeLeads: 15,
-      maxCapacity: 20,
-      conversionRate: 82,
-      avgResponseTime: "3 hours",
-      status: "Available",
-      performance: "Excellent",
-    },
-    {
-      id: "3",
-      name: "Ravi Counselor",
-      email: "ravi@meritcap.com",
-      role: "Counselor",
-      specialization: "Australia & New Zealand",
-      activeLeads: 18,
-      maxCapacity: 20,
-      conversionRate: 78,
-      avgResponseTime: "4 hours",
-      status: "Busy",
-      performance: "Good",
-    },
-    {
-      id: "4",
-      name: "Sneha Counselor",
-      email: "sneha@meritcap.com",
-      role: "Counselor",
-      specialization: "USA & UK",
-      activeLeads: 10,
-      maxCapacity: 20,
-      conversionRate: 80,
-      avgResponseTime: "2.5 hours",
-      status: "Available",
-      performance: "Excellent",
-    },
-    {
-      id: "5",
-      name: "Rahul Counselor",
-      email: "rahul@meritcap.com",
-      role: "Junior Counselor",
-      specialization: "General",
-      activeLeads: 8,
-      maxCapacity: 15,
-      conversionRate: 72,
-      avgResponseTime: "5 hours",
-      status: "Available",
-      performance: "Good",
-    },
-    {
-      id: "6",
-      name: "Anjali Counselor",
-      email: "anjali@meritcap.com",
-      role: "Senior Counselor",
-      specialization: "Canada & Europe",
-      activeLeads: 14,
-      maxCapacity: 20,
-      conversionRate: 88,
-      avgResponseTime: "1.5 hours",
-      status: "Available",
-      performance: "Excellent",
-    },
-    {
-      id: "7",
-      name: "Vikram Counselor",
-      email: "vikram@meritcap.com",
-      role: "Counselor",
-      specialization: "Australia",
-      activeLeads: 16,
-      maxCapacity: 20,
-      conversionRate: 75,
-      avgResponseTime: "3.5 hours",
-      status: "Busy",
-      performance: "Good",
-    },
-    {
-      id: "8",
-      name: "Neha Counselor",
-      email: "neha@meritcap.com",
-      role: "Junior Counselor",
-      specialization: "UK",
-      activeLeads: 6,
-      maxCapacity: 15,
-      conversionRate: 70,
-      avgResponseTime: "4 hours",
-      status: "Available",
-      performance: "Average",
-    },
-    {
-      id: "9",
-      name: "Karan Counselor",
-      email: "karan@meritcap.com",
-      role: "Senior Counselor",
-      specialization: "USA",
-      activeLeads: 13,
-      maxCapacity: 20,
-      conversionRate: 86,
-      avgResponseTime: "2 hours",
-      status: "Available",
-      performance: "Excellent",
-    },
-    {
-      id: "10",
-      name: "Pooja Counselor",
-      email: "pooja@meritcap.com",
-      role: "Counselor",
-      specialization: "Canada",
-      activeLeads: 11,
-      maxCapacity: 20,
-      conversionRate: 79,
-      avgResponseTime: "3 hours",
-      status: "Available",
-      performance: "Good",
-    },
-  ]
+  const [workload, setWorkload] = useState<CounselorWorkload[]>([])
+  const [unassignedCount, setUnassignedCount] = useState<number>(0)
+  const [loading, setLoading] = useState(true)
+  const [assigning, setAssigning] = useState(false)
+  const [result, setResult] = useState<RoundRobinResult | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
-  // Sample unassigned leads
-  const unassignedLeads = [
-    {
-      id: "L001",
-      name: "Rahul Kumar",
-      email: "rahul.k@email.com",
-      phone: "+91 98765 11111",
-      country: "USA",
-      course: "Computer Science - MS",
-      status: "HOT",
-      score: 92,
-      source: "Website",
-    },
-    {
-      id: "L002",
-      name: "Anita Desai",
-      email: "anita.d@email.com",
-      phone: "+91 98765 22222",
-      country: "UK",
-      course: "MBA",
-      status: "Warm",
-      score: 78,
-      source: "Facebook Ads",
-    },
-    {
-      id: "L003",
-      name: "Suresh Patel",
-      email: "suresh.p@email.com",
-      phone: "+91 98765 33333",
-      country: "Canada",
-      course: "Data Science - MS",
-      status: "HOT",
-      score: 88,
-      source: "Google Ads",
-    },
-  ]
-
-  const handleAssign = () => {
-    if (selectedLeads.length === 0) {
-      alert("Please select at least one lead")
-      return
+  const fetchData = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const [workloadData, countData] = await Promise.all([
+        getCounselorWorkload(),
+        apiRequest<{ totalElements: number }>("/leads?size=1&page=0"),
+      ])
+      setWorkload(workloadData)
+      // Fetch unassigned count via a separate lightweight call
+      const unassignedRes = await apiRequest<any>("/leads?size=1&page=0&assignedTo=unassigned")
+      // Fallback: derive from workload total vs total leads
+      setUnassignedCount(unassignedRes?.data?.totalElements ?? 0)
+    } catch (e: any) {
+      setError(e.message)
+    } finally {
+      setLoading(false)
     }
-    if (!selectedCounselor) {
-      alert("Please select a counselor")
-      return
+  }, [])
+
+  // Fetch unassigned count using the leads endpoint with a filter trick
+  useEffect(() => {
+    const fetchUnassigned = async () => {
+      try {
+        const res = await apiRequest<any>("/leads/count")
+        const totalRes = await apiRequest<any>("/leads?size=1&page=0")
+        const assignedTotal = workload.reduce((sum, c) => sum + c.totalLeads, 0)
+        const total = totalRes?.data?.totalElements ?? 0
+        setUnassignedCount(Math.max(0, total - assignedTotal))
+      } catch {
+        // silently ignore
+      }
     }
-    console.log("[v0] Assigning leads:", selectedLeads, "to counselor:", selectedCounselor)
-    alert(`Successfully assigned ${selectedLeads.length} lead(s)`)
-    router.push("/admin/leads")
-  }
+    if (!loading && workload.length > 0) fetchUnassigned()
+  }, [workload, loading])
 
-  const toggleLeadSelection = (leadId: string) => {
-    setSelectedLeads((prev) => (prev.includes(leadId) ? prev.filter((id) => id !== leadId) : [...prev, leadId]))
-  }
+  useEffect(() => {
+    getCounselorWorkload()
+      .then(setWorkload)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false))
+  }, [])
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Available":
-        return "bg-green-100 text-green-700 border-green-300"
-      case "Busy":
-        return "bg-yellow-100 text-yellow-700 border-yellow-300"
-      default:
-        return "bg-gray-100 text-gray-700 border-gray-200"
+  const handleRoundRobin = async () => {
+    setAssigning(true)
+    setResult(null)
+    setError(null)
+    try {
+      const res = await assignLeadsRoundRobin()
+      setResult(res)
+      // Refresh workload after assignment
+      const updated = await getCounselorWorkload()
+      setWorkload(updated)
+      setUnassignedCount(0)
+    } catch (e: any) {
+      setError(e.message)
+    } finally {
+      setAssigning(false)
     }
   }
 
-  const getPerformanceColor = (performance: string) => {
-    switch (performance) {
-      case "Excellent":
-        return "bg-green-100 text-green-700"
-      case "Good":
-        return "bg-blue-100 text-blue-700"
-      case "Average":
-        return "bg-yellow-100 text-yellow-700"
-      default:
-        return "bg-gray-100 text-gray-700"
-    }
-  }
-
-  const getLeadStatusColor = (status: string) => {
-    switch (status) {
-      case "HOT":
-        return "bg-red-100 text-red-700 border-red-300"
-      case "Warm":
-        return "bg-yellow-100 text-yellow-700 border-yellow-300"
-      case "Cold":
-        return "bg-blue-100 text-blue-700 border-blue-300"
-      default:
-        return "bg-gray-100 text-gray-700 border-gray-200"
-    }
-  }
-
-  const filteredCounselors = counselors.filter(
-    (counselor) =>
-      counselor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      counselor.specialization.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+  const totalLeads = workload.reduce((sum, c) => sum + c.totalLeads, 0)
 
   return (
     <div className="space-y-6">
@@ -258,19 +133,25 @@ export default function LeadAssignmentPage() {
           </Button>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Lead Assignment</h1>
-            <p className="text-sm text-gray-600 mt-1">Assign leads to counselors based on availability and expertise</p>
+            <p className="text-sm text-gray-600 mt-1">
+              Round-robin distribution and counselor workload overview
+            </p>
           </div>
         </div>
+        <Button variant="outline" size="sm" onClick={fetchData} disabled={loading} className="gap-2">
+          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          Refresh
+        </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600 mb-1">Total Counselors</p>
-                <p className="text-2xl font-bold text-blue-600">{counselors.length}</p>
+                <p className="text-2xl font-bold text-blue-600">{workload.length}</p>
               </div>
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                 <User className="w-5 h-5 text-blue-600" />
@@ -283,10 +164,8 @@ export default function LeadAssignmentPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600 mb-1">Available</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {counselors.filter((c) => c.status === "Available").length}
-                </p>
+                <p className="text-xs text-gray-600 mb-1">Total Assigned</p>
+                <p className="text-2xl font-bold text-green-600">{totalLeads}</p>
               </div>
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                 <UserCheck className="w-5 h-5 text-green-600" />
@@ -299,8 +178,8 @@ export default function LeadAssignmentPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600 mb-1">Unassigned Leads</p>
-                <p className="text-2xl font-bold text-orange-600">{unassignedLeads.length}</p>
+                <p className="text-xs text-gray-600 mb-1">Unassigned</p>
+                <p className="text-2xl font-bold text-orange-600">{unassignedCount}</p>
               </div>
               <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
                 <Target className="w-5 h-5 text-orange-600" />
@@ -313,186 +192,179 @@ export default function LeadAssignmentPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600 mb-1">Avg Conversion</p>
+                <p className="text-xs text-gray-600 mb-1">Avg per Counselor</p>
                 <p className="text-2xl font-bold text-purple-600">
-                  {Math.round(counselors.reduce((acc, c) => acc + c.conversionRate, 0) / counselors.length)}%
+                  {workload.length > 0 ? Math.round(totalLeads / workload.length) : 0}
                 </p>
               </div>
               <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-purple-600" />
+                <Shuffle className="w-5 h-5 text-purple-600" />
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Counselors List */}
-        <div className="lg:col-span-2 space-y-4">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Select Counselor</CardTitle>
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <Input
-                      placeholder="Search counselors..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 w-64"
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {filteredCounselors.map((counselor) => {
-                const capacityPercentage = (counselor.activeLeads / counselor.maxCapacity) * 100
-                const isSelected = selectedCounselor === counselor.id
+      {/* Round Robin Control Panel */}
+      <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2 text-blue-900">
+            <Shuffle className="w-5 h-5" />
+            Round Robin Auto-Assignment
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-blue-700">
+            Automatically distribute all unassigned leads evenly across active counselors in round-robin order.
+            Counselors who haven't been assigned recently get leads first.
+          </p>
 
-                return (
-                  <div
-                    key={counselor.id}
-                    onClick={() => setSelectedCounselor(counselor.id)}
-                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                      isSelected
-                        ? "border-blue-600 bg-blue-50"
-                        : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between mb-3">
+          {unassignedCount > 0 ? (
+            <div className="flex items-center gap-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+              <Target className="w-4 h-4 text-orange-600 shrink-0" />
+              <p className="text-sm text-orange-700">
+                <strong>{unassignedCount}</strong> lead{unassignedCount !== 1 ? "s are" : " is"} currently unassigned
+              </p>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <CheckCircle className="w-4 h-4 text-green-600 shrink-0" />
+              <p className="text-sm text-green-700">All leads are assigned</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{error}</div>
+          )}
+
+          {result && (
+            <div className="p-4 bg-white border border-green-200 rounded-lg space-y-2">
+              <div className="flex items-center gap-2 text-green-700 font-semibold">
+                <CheckCircle className="w-4 h-4" />
+                {result.assignedCount} lead{result.assignedCount !== 1 ? "s" : ""} assigned
+              </div>
+              {Object.keys(result.counselorAssignments).length > 0 && (
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  {Object.entries(result.counselorAssignments).map(([name, count]) => (
+                    <div key={name} className="flex items-center justify-between text-sm text-gray-700 bg-gray-50 px-3 py-1.5 rounded">
+                      <span className="truncate mr-2">{name}</span>
+                      <Badge variant="secondary">{count}</Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <Button
+            onClick={handleRoundRobin}
+            disabled={assigning || loading || unassignedCount === 0}
+            className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+          >
+            {assigning ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Assigning...
+              </>
+            ) : (
+              <>
+                <Shuffle className="w-4 h-4" />
+                Assign All Unassigned (Round Robin)
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Counselor Workload Grid */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Counselor Workload</h2>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gray-200 rounded-full" />
+                    <div className="space-y-1 flex-1">
+                      <div className="h-4 bg-gray-200 rounded w-3/4" />
+                      <div className="h-3 bg-gray-100 rounded w-1/2" />
+                    </div>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : workload.length === 0 ? (
+          <Card>
+            <CardContent className="p-8 text-center text-gray-500">
+              No counselors found. Add counselors to start assigning leads.
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {workload.map((counselor) => {
+              const maxLeads = Math.max(...workload.map((c) => c.totalLeads), 1)
+              const barColor =
+                counselor.totalLeads / maxLeads > 0.8
+                  ? "bg-red-500"
+                  : counselor.totalLeads / maxLeads > 0.5
+                  ? "bg-yellow-500"
+                  : "bg-green-500"
+
+              return (
+                <Card key={counselor.counselorId} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4 space-y-3">
+                    {/* Counselor header */}
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center text-white font-semibold">
-                          {counselor.name.charAt(0)}
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0">
+                          {counselor.name.charAt(0).toUpperCase()}
                         </div>
-                        <div>
-                          <p className="font-semibold text-gray-900">{counselor.name}</p>
-                          <p className="text-xs text-gray-600">{counselor.role}</p>
-                          <p className="text-xs text-blue-600 mt-1">{counselor.specialization}</p>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-gray-900 text-sm truncate">{counselor.name}</p>
+                          <p className="text-xs text-gray-500 truncate">{counselor.email}</p>
                         </div>
                       </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <Badge className={getStatusColor(counselor.status)}>{counselor.status}</Badge>
-                        <Badge className={getPerformanceColor(counselor.performance)}>{counselor.performance}</Badge>
+                      <div className="text-right shrink-0">
+                        <p className="text-xl font-bold text-gray-900">{counselor.totalLeads}</p>
+                        <p className="text-xs text-gray-500">leads</p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-                      <div>
-                        <p className="text-xs text-gray-500">Active Leads</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {counselor.activeLeads}/{counselor.maxCapacity}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Conversion</p>
-                        <p className="text-sm font-semibold text-green-600">{counselor.conversionRate}%</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Response Time</p>
-                        <p className="text-sm font-semibold text-gray-900">{counselor.avgResponseTime}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Capacity</p>
-                        <p className="text-sm font-semibold text-gray-900">{Math.round(capacityPercentage)}%</p>
-                      </div>
+                    {/* Workload bar */}
+                    <WorkloadBar value={counselor.totalLeads} max={maxLeads} color={barColor} />
+
+                    {/* Status breakdown */}
+                    <div className="flex flex-wrap gap-x-3 gap-y-1">
+                      <StatusDot color="bg-red-500" count={counselor.immediateHotLeads + counselor.hotLeads} label="Hot" />
+                      <StatusDot color="bg-yellow-500" count={counselor.warmLeads} label="Warm" />
+                      <StatusDot color="bg-blue-400" count={counselor.coldLeads} label="Cold" />
+                      <StatusDot color="bg-green-500" count={counselor.contactedLeads} label="Contacted" />
+                      <StatusDot color="bg-purple-500" count={counselor.featureLeads} label="Feature" />
                     </div>
 
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full ${
-                          capacityPercentage >= 90
-                            ? "bg-red-600"
-                            : capacityPercentage >= 70
-                              ? "bg-yellow-600"
-                              : "bg-green-600"
-                        }`}
-                        style={{ width: `${capacityPercentage}%` }}
-                      />
+                    {/* Last assigned + view link */}
+                    <div className="flex items-center justify-between pt-1 border-t border-gray-100">
+                      <p className="text-xs text-gray-400">
+                        Last assigned: {formatRelativeTime(counselor.lastAssignedAt)}
+                      </p>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 text-xs text-blue-600 hover:text-blue-700 gap-1"
+                        onClick={() => router.push(`/admin/leads?assignedTo=${counselor.counselorId}`)}
+                      >
+                        View <ExternalLink className="w-3 h-3" />
+                      </Button>
                     </div>
-                  </div>
-                )
-              })}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Unassigned Leads */}
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Unassigned Leads</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {unassignedLeads.map((lead) => (
-                <div
-                  key={lead.id}
-                  className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                    selectedLeads.includes(lead.id)
-                      ? "border-blue-600 bg-blue-50"
-                      : "border-gray-200 hover:border-blue-300"
-                  }`}
-                  onClick={() => toggleLeadSelection(lead.id)}
-                >
-                  <div className="flex items-start gap-3">
-                    <Checkbox checked={selectedLeads.includes(lead.id)} className="mt-1" />
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <p className="font-semibold text-sm text-gray-900">{lead.name}</p>
-                          <p className="text-xs text-gray-600">{lead.email}</p>
-                        </div>
-                        <Badge className={getLeadStatusColor(lead.status)}>{lead.status}</Badge>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs text-gray-600">
-                          <span className="font-medium">Country:</span> {lead.country}
-                        </p>
-                        <p className="text-xs text-gray-600">
-                          <span className="font-medium">Course:</span> {lead.course}
-                        </p>
-                        <p className="text-xs text-gray-600">
-                          <span className="font-medium">Score:</span> {lead.score}
-                        </p>
-                        <p className="text-xs text-gray-600">
-                          <span className="font-medium">Source:</span> {lead.source}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Assignment Summary */}
-          <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
-            <CardHeader>
-              <CardTitle className="text-lg text-blue-900">Assignment Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-blue-700">Selected Leads:</p>
-                <Badge className="bg-blue-600 text-white">{selectedLeads.length}</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-blue-700">Selected Counselor:</p>
-                <Badge className="bg-blue-600 text-white">
-                  {selectedCounselor ? counselors.find((c) => c.id === selectedCounselor)?.name : "None"}
-                </Badge>
-              </div>
-              <Button
-                onClick={handleAssign}
-                disabled={selectedLeads.length === 0 || !selectedCounselor}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white gap-2"
-              >
-                <UserCheck className="w-4 h-4" />
-                Assign Leads
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   )

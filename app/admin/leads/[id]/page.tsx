@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { api } from "@/lib/api-client"
 import { toast } from "@/hooks/use-toast"
+import { reassignLead, getLeadAssignmentHistory } from "@/lib/api/leads"
+import type { AssignmentHistoryEntry } from "@/lib/api/leads"
 import {
   ArrowLeft,
   Phone,
@@ -40,6 +42,9 @@ import {
   MapPin,
   Briefcase,
   Globe,
+  ArrowRightLeft,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react"
 
 export default function LeadDetailPage({ params }: { params: { id: string } }) {
@@ -51,6 +56,18 @@ export default function LeadDetailPage({ params }: { params: { id: string } }) {
   const [documentDialogOpen, setDocumentDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [lead, setLead] = useState<any>(null)
+
+  // Reassign state
+  const [showReassignDialog, setShowReassignDialog] = useState(false)
+  const [reassignCounselorId, setReassignCounselorId] = useState("")
+  const [reassignReason, setReassignReason] = useState("")
+  const [reassignLoading, setReassignLoading] = useState(false)
+  const [counselorsList, setCounselorsList] = useState<any[]>([])
+
+  // Assignment history state
+  const [showHistory, setShowHistory] = useState(false)
+  const [assignmentHistory, setAssignmentHistory] = useState<AssignmentHistoryEntry[]>([])
+  const [historyLoading, setHistoryLoading] = useState(false)
 
   // Fetch lead data from API
   useEffect(() => {
@@ -483,6 +500,51 @@ export default function LeadDetailPage({ params }: { params: { id: string } }) {
       default:
         return "bg-gray-100 text-gray-600"
     }
+  }
+
+  const openReassignDialog = async () => {
+    setReassignCounselorId("")
+    setReassignReason("")
+    if (counselorsList.length === 0) {
+      try {
+        const res = await api.get("/api/user/counselors")
+        if (res.success && res.data) setCounselorsList(res.data)
+      } catch { /* ignore */ }
+    }
+    setShowReassignDialog(true)
+  }
+
+  const handleReassign = async () => {
+    if (!reassignCounselorId) return
+    setReassignLoading(true)
+    try {
+      await reassignLead(Number(params.id), Number(reassignCounselorId), reassignReason)
+      const counselor = counselorsList.find((c) => String(c.id) === reassignCounselorId)
+      const newName = counselor ? `${counselor.firstName} ${counselor.lastName}` : "New Counselor"
+      setLead((prev: any) => ({ ...prev, assignedTo: newName, assignedToId: Number(reassignCounselorId) }))
+      toast({ title: "Lead Reassigned", description: `Lead reassigned to ${newName}.` })
+      setShowReassignDialog(false)
+      // Refresh history if visible
+      if (showHistory) loadHistory()
+    } catch (e: any) {
+      toast({ title: "Reassignment Failed", description: e.message, variant: "destructive" })
+    } finally {
+      setReassignLoading(false)
+    }
+  }
+
+  const loadHistory = async () => {
+    setHistoryLoading(true)
+    try {
+      const history = await getLeadAssignmentHistory(Number(params.id))
+      setAssignmentHistory(history)
+    } catch { /* ignore */ }
+    finally { setHistoryLoading(false) }
+  }
+
+  const toggleHistory = () => {
+    if (!showHistory && assignmentHistory.length === 0) loadHistory()
+    setShowHistory((prev) => !prev)
   }
 
   const getStatusColor = (status: string) => {
@@ -937,10 +999,53 @@ export default function LeadDetailPage({ params }: { params: { id: string } }) {
                       </div>
                       <div>
                         <Label className="text-xs text-gray-500">Assigned To</Label>
-                        <p className="font-medium text-gray-900 mt-0.5 flex items-center gap-1">
-                          <User className="w-3 h-3 text-gray-400" />
-                          {lead.assignedTo}
-                        </p>
+                        <div className="flex items-center justify-between mt-0.5">
+                          <p className="font-medium text-gray-900 flex items-center gap-1">
+                            <User className="w-3 h-3 text-gray-400" />
+                            {lead.assignedTo}
+                          </p>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 px-2 text-xs text-indigo-600 hover:text-indigo-700 gap-1"
+                            onClick={openReassignDialog}
+                          >
+                            <ArrowRightLeft className="w-3 h-3" />
+                            Reassign
+                          </Button>
+                        </div>
+                        {/* Assignment history toggle */}
+                        <button
+                          className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1 mt-1"
+                          onClick={toggleHistory}
+                        >
+                          {showHistory ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                          {showHistory ? "Hide" : "View"} assignment history
+                        </button>
+                        {showHistory && (
+                          <div className="mt-2 space-y-2">
+                            {historyLoading ? (
+                              <p className="text-xs text-gray-400">Loading...</p>
+                            ) : assignmentHistory.length === 0 ? (
+                              <p className="text-xs text-gray-400">No assignment history yet.</p>
+                            ) : (
+                              assignmentHistory.map((entry) => (
+                                <div key={entry.id} className="text-xs bg-gray-50 rounded p-2 space-y-0.5">
+                                  <div className="flex items-center gap-1 text-gray-700">
+                                    <ArrowRightLeft className="w-3 h-3 text-indigo-400 shrink-0" />
+                                    <span>
+                                      {entry.fromCounselorName ?? "Unassigned"} → {entry.toCounselorName ?? "Unassigned"}
+                                    </span>
+                                  </div>
+                                  {entry.reason && <p className="text-gray-500 pl-4">{entry.reason}</p>}
+                                  <p className="text-gray-400 pl-4">
+                                    {entry.assignedByName ?? "System"} · {new Date(entry.assignedAt).toLocaleString()}
+                                  </p>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-gray-100">
@@ -1363,6 +1468,61 @@ export default function LeadDetailPage({ params }: { params: { id: string } }) {
             </div>
           </DialogContent>
         </Dialog>
+
+      {/* Reassign Lead Dialog */}
+      <Dialog open={showReassignDialog} onOpenChange={setShowReassignDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ArrowRightLeft className="w-5 h-5 text-indigo-600" />
+              Reassign Lead
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Label>New Counselor</Label>
+              <Select value={reassignCounselorId} onValueChange={setReassignCounselorId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a counselor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {counselorsList.map((c: any) => (
+                    <SelectItem key={c.id} value={String(c.id)}>
+                      {c.firstName} {c.lastName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Reason (optional)</Label>
+              <Textarea
+                placeholder="Why is this lead being reassigned?"
+                value={reassignReason}
+                onChange={(e) => setReassignReason(e.target.value)}
+                rows={3}
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setShowReassignDialog(false)}
+                disabled={reassignLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
+                onClick={handleReassign}
+                disabled={!reassignCounselorId || reassignLoading}
+              >
+                {reassignLoading ? "Reassigning..." : "Reassign"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       </div>
     </div>
   )

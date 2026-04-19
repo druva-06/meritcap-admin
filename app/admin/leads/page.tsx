@@ -21,6 +21,7 @@ import { toast } from "@/hooks/use-toast"
 import { api } from "@/lib/api-client"
 // Assuming apiUtils and generateQRCode are in a separate file, e.g., lib/api.ts
 import { apiUtils, generateQRCode } from "@/lib/apiUtils" // Placeholder, adjust path as needed
+import { reassignLead } from "@/lib/api/leads"
 
 // Mock User and other types for demonstration
 interface User {
@@ -196,6 +197,14 @@ export default function AdminLeads() {
   const [reminderDialogOpen, setReminderDialogOpen] = useState(false)
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false)
   const [transferDialogOpen, setTransferDialogOpen] = useState(false)
+
+  // Reassign dialog state
+  const [showReassignDialog, setShowReassignDialog] = useState(false)
+  const [reassignLeadId, setReassignLeadId] = useState<string | null>(null)
+  const [reassignCounselorId, setReassignCounselorId] = useState("")
+  const [reassignReason, setReassignReason] = useState("")
+  const [reassignLoading, setReassignLoading] = useState(false)
+  const [counselorsList, setCounselorsList] = useState<any[]>([])
 
   // Campaign form states
   const [campaignName, setCampaignName] = useState("")
@@ -441,6 +450,35 @@ export default function AdminLeads() {
     else score += 3
 
     return Math.min(Math.round(score), 100)
+  }
+
+  const openReassignDialog = async (leadId: string) => {
+    setReassignLeadId(leadId)
+    setReassignCounselorId("")
+    setReassignReason("")
+    // Fetch counselors if not loaded yet
+    if (counselorsList.length === 0) {
+      try {
+        const res = await api.get("/api/user/counselors")
+        if (res.success && res.data) setCounselorsList(res.data)
+      } catch { /* ignore */ }
+    }
+    setShowReassignDialog(true)
+  }
+
+  const handleReassign = async () => {
+    if (!reassignLeadId || !reassignCounselorId) return
+    setReassignLoading(true)
+    try {
+      await reassignLead(Number(reassignLeadId), Number(reassignCounselorId), reassignReason)
+      toast({ title: "Lead Reassigned", description: "Lead has been reassigned successfully." })
+      setShowReassignDialog(false)
+      fetchLeads()
+    } catch (e: any) {
+      toast({ title: "Reassignment Failed", description: e.message, variant: "destructive" })
+    } finally {
+      setReassignLoading(false)
+    }
   }
 
   const handleBulkAssign = (counselorName: string) => {
@@ -1624,6 +1662,17 @@ export default function AdminLeads() {
                                 >
                                   <Eye className="w-4 h-4" />
                                 </Button>
+                                {!isCounselor && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                                    title="Reassign lead"
+                                    onClick={() => openReassignDialog(lead.id)}
+                                  >
+                                    <ArrowRightLeft className="w-4 h-4" />
+                                  </Button>
+                                )}
                                 {canEdit && (
                                   <>
                                     <Button
@@ -3309,6 +3358,61 @@ export default function AdminLeads() {
               </p>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Reassign Lead Dialog */}
+      <Dialog open={showReassignDialog} onOpenChange={setShowReassignDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ArrowRightLeft className="w-5 h-5 text-indigo-600" />
+              Reassign Lead
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Label>New Counselor</Label>
+              <Select value={reassignCounselorId} onValueChange={setReassignCounselorId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a counselor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {counselorsList.map((c: any) => (
+                    <SelectItem key={c.id} value={String(c.id)}>
+                      {c.firstName} {c.lastName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Reason (optional)</Label>
+              <Textarea
+                placeholder="Why is this lead being reassigned?"
+                value={reassignReason}
+                onChange={(e) => setReassignReason(e.target.value)}
+                rows={3}
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setShowReassignDialog(false)}
+                disabled={reassignLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
+                onClick={handleReassign}
+                disabled={!reassignCounselorId || reassignLoading}
+              >
+                {reassignLoading ? "Reassigning..." : "Reassign"}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

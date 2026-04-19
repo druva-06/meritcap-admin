@@ -102,3 +102,31 @@ export interface CallLog {
   leadName?: string
   recordingUrl?: string
 }
+
+export interface CounselorWorkload {
+  counselorId: number
+  name: string
+  email: string
+  totalLeads: number
+  hotLeads: number
+  immediateHotLeads: number
+  warmLeads: number
+  coldLeads: number
+  featureLeads: number
+  contactedLeads: number
+  lastAssignedAt: string | null
+}
+
+export interface RoundRobinResult {
+  assignedCount: number
+  counselorAssignments: Record<string, number>
+}
+
+export interface AssignmentHistoryEntry {
+  id: number
+  fromCounselorName: string | null
+  toCounselorName: string | null
+  assignedByName: string | null
+  reason: string | null
+  assignedAt: string
+}
