@@ -30,6 +30,7 @@ import { Search, Download, UserPlus, Eye, FileText, Phone, Mail, GraduationCap, 
 import { api } from "@/lib/api-client"
 import { deleteUser } from "@/lib/api/users"
 import { toast } from "@/hooks/use-toast"
+import { usePermissions } from "@/lib/permissions-context"
 
 // Types for API response
 interface User {
@@ -54,6 +55,11 @@ interface PagedResponse {
 }
 
 export default function AdminStudents() {
+  const { hasPermission } = usePermissions()
+  const canCreate = hasPermission("STUDENT_CREATE")
+  const canDelete = hasPermission("STUDENT_DELETE")
+  const canExport = hasPermission("STUDENT_EXPORT")
+
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedStudent, setSelectedStudent] = useState<User | null>(null)
   const [studentToDelete, setStudentToDelete] = useState<User | null>(null)
@@ -216,13 +222,15 @@ export default function AdminStudents() {
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Students</h1>
           <p className="text-sm text-gray-500">Manage student profiles and services</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700 shrink-0" asChild>
-          <Link href="/admin/students/new">
-            <UserPlus className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Add Student</span>
-            <span className="sm:hidden">Add</span>
-          </Link>
-        </Button>
+        {canCreate && (
+          <Button className="bg-blue-600 hover:bg-blue-700 shrink-0" asChild>
+            <Link href="/admin/students/new">
+              <UserPlus className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">Add Student</span>
+              <span className="sm:hidden">Add</span>
+            </Link>
+          </Button>
+        )}
       </div>
 
       {/* Stats */}
@@ -281,9 +289,11 @@ export default function AdminStudents() {
             className="pl-9"
           />
         </div>
-        <Button variant="outline" size="icon" className="shrink-0">
-          <Download className="w-4 h-4" />
-        </Button>
+        {canExport && (
+          <Button variant="outline" size="icon" className="shrink-0">
+            <Download className="w-4 h-4" />
+          </Button>
+        )}
       </div>
 
       {/* Main content: list + detail panel */}
@@ -379,15 +389,17 @@ export default function AdminStudents() {
                               >
                                 <Eye className="w-3.5 h-3.5" />
                               </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-7 w-7 p-0 hover:bg-red-100 text-red-600"
-                                onClick={(e) => { e.stopPropagation(); openDeleteUserDialog(student) }}
-                                title="Delete"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </Button>
+                              {canDelete && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 w-7 p-0 hover:bg-red-100 text-red-600"
+                                  onClick={(e) => { e.stopPropagation(); openDeleteUserDialog(student) }}
+                                  title="Delete"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
+                              )}
                             </div>
                           </td>
                         </tr>

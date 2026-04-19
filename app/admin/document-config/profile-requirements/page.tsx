@@ -45,9 +45,9 @@ import {
 
 export default function ProfileRequirementsPage() {
   const { hasPermission } = usePermissions()
-  const canCreate = hasPermission("DOCUMENT_CONFIG_CREATE")
-  const canEdit = hasPermission("DOCUMENT_CONFIG_EDIT")
-  const canDelete = hasPermission("DOCUMENT_CONFIG_DELETE")
+  const canCreate = hasPermission("PROFILE_REQ_CREATE")
+  const canEdit = hasPermission("PROFILE_REQ_EDIT")
+  const canDelete = hasPermission("PROFILE_REQ_DELETE")
 
   const [requirements, setRequirements] = useState<ProfileDocumentRequirement[]>([])
   const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([])

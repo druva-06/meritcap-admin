@@ -39,9 +39,9 @@ import {
 
 export default function DocumentTypesPage() {
   const { hasPermission } = usePermissions()
-  const canCreate = hasPermission("DOCUMENT_CONFIG_CREATE")
-  const canEdit = hasPermission("DOCUMENT_CONFIG_EDIT")
-  const canDelete = hasPermission("DOCUMENT_CONFIG_DELETE")
+  const canCreate = hasPermission("DOCUMENT_TYPE_CREATE")
+  const canEdit = hasPermission("DOCUMENT_TYPE_EDIT")
+  const canDelete = hasPermission("DOCUMENT_TYPE_DELETE")
 
   const [types, setTypes] = useState<DocumentType[]>([])
   const [loading, setLoading] = useState(true)

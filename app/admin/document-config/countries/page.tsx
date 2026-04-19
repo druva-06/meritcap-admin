@@ -36,9 +36,9 @@ import {
 
 export default function CountriesPage() {
   const { hasPermission } = usePermissions()
-  const canCreate = hasPermission("DOCUMENT_CONFIG_CREATE")
-  const canEdit = hasPermission("DOCUMENT_CONFIG_EDIT")
-  const canDelete = hasPermission("DOCUMENT_CONFIG_DELETE")
+  const canCreate = hasPermission("COUNTRY_CONFIG_CREATE")
+  const canEdit = hasPermission("COUNTRY_CONFIG_EDIT")
+  const canDelete = hasPermission("COUNTRY_CONFIG_DELETE")
 
   const [countries, setCountries] = useState<Country[]>([])
   const [loading, setLoading] = useState(true)
