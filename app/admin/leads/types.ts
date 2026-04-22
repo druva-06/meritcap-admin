@@ -76,15 +76,18 @@ export interface Counselor {
 }
 
 export interface Campaign {
-  id: string
+  id: number
   name: string
   source: string
-  totalLeads?: number
-  assignedLeads?: number
-  unassignedLeads?: number
-  duplicates?: number
+  description?: string
+  qrCode?: string
   status: string
+  createdBy?: string
   createdDate: string
+  totalLeads: number
+  assignedLeads: number
+  unassignedLeads: number
+  duplicateLeads: number
 }
 
 export interface Allocation {

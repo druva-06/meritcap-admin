@@ -14,14 +14,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Users, UserPlus, Zap, AlertCircle, TrendingUp, Clock, Calendar, Phone, Search, Download, Eye, Mail, MessageSquare, FileText, Filter, X, CheckCircle, Send, History, BarChart3, Merge, Plus, QrCode, FolderKanban, UserCheck, Activity, CheckCircle2, ArrowRightLeft, PlayCircle, Star } from 'lucide-react'
+import { Users, UserPlus, Zap, AlertCircle, TrendingUp, Clock, Calendar, Phone, Search, Download, Eye, Mail, MessageSquare, FileText, Filter, X, CheckCircle, Send, History, BarChart3, Merge, Plus, QrCode, FolderKanban, UserCheck, UserX, Activity, CheckCircle2, ArrowRightLeft, PlayCircle, Star } from 'lucide-react'
 import { useAuth } from "@/lib/auth-context"
 import { mockData } from "@/lib/mock-data"
 import { toast } from "@/hooks/use-toast"
 import { api } from "@/lib/api-client"
 // Assuming apiUtils and generateQRCode are in a separate file, e.g., lib/api.ts
 import { apiUtils, generateQRCode } from "@/lib/apiUtils" // Placeholder, adjust path as needed
-import { reassignLead } from "@/lib/api/leads"
+import { reassignLead, getCampaigns, createCampaignApi } from "@/lib/api/leads"
+import type { Campaign } from "./types"
+import { CreateCampaignDialog } from "./components/campaigns/CreateCampaignDialog"
+import { CampaignStatsCards } from "./components/campaigns/CampaignStatsCards"
+import { CampaignTable } from "./components/campaigns/CampaignTable"
+import { LeadStatsCards, LeadsFilterBar, BulkActionBar, LeadsTable, ReassignLeadDialog } from "./components/all-leads"
 
 // Mock User and other types for demonstration
 interface User {
@@ -104,7 +109,6 @@ export default function AdminLeads() {
   const countsLoadedRef = useRef(false)
 
   const [activeMainTab, setActiveMainTab] = useState("leads")
-  const [activeTab, setActiveTab] = useState("all")
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCampaignFilter, setSelectedCampaignFilter] = useState("all")
   const [isLoading, setIsLoading] = useState(true)
@@ -119,7 +123,8 @@ export default function AdminLeads() {
     warmLeads: 0,
     coldLeads: 0,
     featureLeads: 0,
-    contactedLeads: 0
+    contactedLeads: 0,
+    assignedLeads: 0
   })
 
   const [selectedLeads, setSelectedLeads] = useState<string[]>([])
@@ -142,7 +147,7 @@ export default function AdminLeads() {
   const [selectedLead, setSelectedLead] = useState<any>(null) // Added to fix undeclared variable
 
   // Existing states
-  const [campaigns, setCampaigns] = useState(mockData.campaigns)
+  const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [leads, setLeads] = useState<Lead[]>([])
   const [allocations, setAllocations] = useState(mockData.allocations)
   const [callLogs, setCallLogs] = useState(mockData.callLogs)
@@ -233,21 +238,7 @@ export default function AdminLeads() {
       if (scoreFrom) params.append('scoreFrom', scoreFrom)
       if (scoreTo) params.append('scoreTo', scoreTo)
 
-      // Add status filters based on active tab
-      if (activeTab !== 'all') {
-        let statusValue = ''
-        switch (activeTab) {
-          case 'hot': statusValue = 'HOT'; break
-          case 'immediate': statusValue = 'IMMEDIATE_HOT'; break
-          case 'warm': statusValue = 'WARM'; break
-          case 'cold': statusValue = 'COLD'; break
-          case 'feature': statusValue = 'FEATURE_LEAD'; break
-          case 'contacted': statusValue = 'CONTACTED'; break
-        }
-        if (statusValue) params.append('status', statusValue)
-      }
-
-      // Add selected statuses from advanced filters
+      // Status filters come only from advanced filter checkboxes
       selectedStatuses.forEach(status => params.append('status', status))
 
       // Add tags
@@ -316,11 +307,21 @@ export default function AdminLeads() {
           warmLeads: response.data.warm_leads || 0,
           coldLeads: response.data.cold_leads || 0,
           featureLeads: response.data.feature_leads || 0,
-          contactedLeads: response.data.contacted_leads || 0
+          contactedLeads: response.data.contacted_leads || 0,
+          assignedLeads: response.data.assigned_leads || 0
         })
       }
     } catch (error) {
       console.error('Error fetching lead status counts:', error)
+    }
+  }
+
+  const fetchCampaigns = async () => {
+    try {
+      const data = await getCampaigns()
+      setCampaigns(data)
+    } catch (error) {
+      console.error('Error fetching campaigns:', error)
     }
   }
 
@@ -331,9 +332,9 @@ export default function AdminLeads() {
     }, 500) // Debounce for 500ms
 
     return () => clearTimeout(timeoutId)
-  }, [searchTerm, selectedCampaignFilter, activeTab, dateFrom, dateTo, scoreFrom, scoreTo, selectedStatuses, selectedTags, currentPage, pageSize])
+  }, [searchTerm, selectedCampaignFilter, dateFrom, dateTo, scoreFrom, scoreTo, selectedStatuses, selectedTags, currentPage, pageSize])
 
-  // Fetch total leads count on mount
+  // Fetch total leads count and campaigns on mount
   useEffect(() => {
     // Prevent duplicate calls in React 18 Strict Mode
     if (countsLoadedRef.current) return
@@ -341,30 +342,12 @@ export default function AdminLeads() {
 
     fetchTotalLeadsCount()
     fetchLeadStatusCounts()
+    fetchCampaigns()
   }, [])
 
   // No localStorage persistence - using API as single source of truth
 
 
-  const tabs = [
-    { id: "all", label: "All Leads", icon: Users, count: totalLeadsCount },
-    {
-      id: "immediate",
-      label: "IMMEDIATE HOT",
-      icon: AlertCircle,
-      count: statusCounts.immediateHotLeads,
-    },
-    { id: "hot", label: "HOT", icon: Zap, count: statusCounts.hotLeads },
-    { id: "warm", label: "WARM", icon: TrendingUp, count: statusCounts.warmLeads },
-    { id: "cold", label: "COLD", icon: Clock, count: statusCounts.coldLeads },
-    {
-      id: "feature",
-      label: "FEATURE LEAD",
-      icon: Star,
-      count: statusCounts.featureLeads,
-    },
-    { id: "contacted", label: "CONTACTED", icon: Phone, count: statusCounts.contactedLeads },
-  ]
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -387,11 +370,15 @@ export default function AdminLeads() {
       case "Lost":
         return "bg-gray-100 text-gray-700 border-gray-200"
       case "Active":
+      case "ACTIVE":
         return "bg-green-600 text-white"
       case "Completed":
+      case "COMPLETED":
         return "bg-gray-600 text-white"
       case "In Progress":
         return "bg-blue-600 text-white"
+      case "PAUSED":
+        return "bg-yellow-500 text-white"
       case "Connected":
         return "bg-green-600 text-white"
       case "Not Connected":
@@ -584,48 +571,32 @@ export default function AdminLeads() {
     }
 
     try {
-      let processedLeads: any[] = []
-      let duplicates: any[] = []
-
-      // Process CSV file if uploaded
-      if (campaignFile) {
-        const result = await apiUtils.processCSV(campaignFile)
-        processedLeads = result.validLeads
-        duplicates = result.duplicates
-
-        toast({
-          title: "CSV Processed",
-          description: `Found ${processedLeads.length} valid leads and ${duplicates.length} duplicates`,
-        })
-      }
-
-      // Generate QR code for offline campaigns
+      // Generate QR code URL for this campaign
       const qrCode = await generateQRCode(campaignName)
       setQrCodeUrl(qrCode)
 
-      // Create campaign
-      const newCampaign = await apiUtils.createCampaign({
+      // Create campaign via real API
+      const newCampaign = await createCampaignApi({
         name: campaignName,
         source: campaignSource,
-        totalLeads: processedLeads.length,
         qrCode: qrCode,
       })
 
-      setCampaigns([...campaigns, newCampaign])
+      setCampaigns((prev) => [newCampaign, ...prev])
 
       toast({
         title: "Campaign Created",
-        description: `Campaign "${campaignName}" created successfully with QR code generated`,
+        description: `Campaign "${campaignName}" created successfully`,
       })
 
       setCreateCampaignDialogOpen(false)
       setCampaignName("")
       setCampaignSource("")
       setCampaignFile(null)
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to create campaign",
+        description: error?.message || "Failed to create campaign",
         variant: "destructive",
       })
     }
@@ -985,7 +956,8 @@ export default function AdminLeads() {
     totalCampaigns: campaigns.length,
     totalCampaignLeads: campaigns.reduce((sum, c) => sum + (c.totalLeads || 0), 0),
     assignedLeads: campaigns.reduce((sum, c) => sum + (c.assignedLeads || 0), 0),
-    duplicates: campaigns.reduce((sum, c) => sum + (c.duplicates || 0), 0),
+    unassignedLeads: campaigns.reduce((sum, c) => sum + (c.unassignedLeads || 0), 0),
+    duplicates: campaigns.reduce((sum, c) => sum + (c.duplicateLeads || 0), 0),
     totalAllocated: allocations.reduce((sum, a) => sum + (a.leadsAllocated || 0), 0),
     inProgress: allocations.reduce((sum, a) => sum + (a.pending || 0), 0),
     completed: allocations.reduce((sum, a) => sum + (a.completed || 0), 0),
@@ -1179,7 +1151,7 @@ export default function AdminLeads() {
                 value="assign"
                 className="data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=inactive]:text-white rounded-full px-6 transition-all duration-200"
               >
-                Assign Data
+                Campaigns
               </TabsTrigger>
               <TabsTrigger
                 value="allocate"
@@ -1198,614 +1170,66 @@ export default function AdminLeads() {
         </TabsList>
 
         <TabsContent value="leads" className="space-y-4">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Total Leads</p>
-                    <p className="text-2xl font-bold text-gray-900">{totalLeadsCount.toLocaleString()}</p>
-                  </div>
-                  <Users className="w-8 h-8 text-blue-600" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Assigned</p>
-                    <p className="text-2xl font-bold text-gray-900">{(stats.assignedLeads || 0).toLocaleString()}</p>
-                  </div>
-                  <CheckCircle className="w-8 h-8 text-green-600" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Duplicates</p>
-                    <p className="text-2xl font-bold text-gray-900">{(stats.duplicates || 0).toLocaleString()}</p>
-                  </div>
-                  <Merge className="w-8 h-8 text-orange-600" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Avg Score</p>
-                    <p className="text-2xl font-bold text-gray-900">{stats.avgScore}/100</p>
-                  </div>
-                  <Zap className="w-8 h-8 text-yellow-600" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <LeadStatsCards
+            totalLeads={totalLeadsCount}
+            assignedLeads={statusCounts.assignedLeads || 0}
+            duplicates={stats.duplicates || 0}
+            avgScore={Math.round(stats.avgScore)}
+          />
 
-          <Card>
-            <CardContent className="p-4 space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input
-                    placeholder="Search by name, email, phone..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                <Select value={selectedCampaignFilter} onValueChange={setSelectedCampaignFilter}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="All Campaigns" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Campaigns</SelectItem>
-                    <SelectItem value="Website">Website</SelectItem>
-                    <SelectItem value="Facebook Ads">Facebook Ads</SelectItem>
-                    <SelectItem value="Google Ads">Google Ads</SelectItem>
-                    <SelectItem value="Offline Event">Offline Event</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                  className="border-blue-600 text-blue-600"
-                >
-                  <Filter className="w-4 h-4 mr-2" />
-                  {showAdvancedFilters ? "Hide" : "Advanced"} Filters
-                </Button>
-              </div>
+          <LeadsFilterBar
+            searchTerm={searchTerm}
+            onSearchTermChange={(v) => { setSearchTerm(v); setCurrentPage(0) }}
+            selectedCampaignFilter={selectedCampaignFilter}
+            onCampaignFilterChange={(v) => { setSelectedCampaignFilter(v); setCurrentPage(0) }}
+            showAdvancedFilters={showAdvancedFilters}
+            onToggleAdvancedFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            dateFrom={dateFrom}
+            onDateFromChange={(v) => { setDateFrom(v); setCurrentPage(0) }}
+            dateTo={dateTo}
+            onDateToChange={(v) => { setDateTo(v); setCurrentPage(0) }}
+            scoreFrom={scoreFrom}
+            onScoreFromChange={(v) => { setScoreFrom(v); setCurrentPage(0) }}
+            scoreTo={scoreTo}
+            onScoreToChange={(v) => { setScoreTo(v); setCurrentPage(0) }}
+            selectedStatuses={selectedStatuses}
+            onSelectedStatusesChange={(v) => { setSelectedStatuses(v); setCurrentPage(0) }}
+            selectedTags={selectedTags}
+            onSelectedTagsChange={(v) => { setSelectedTags(v); setCurrentPage(0) }}
+          />
 
-              {showAdvancedFilters && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div>
-                    <Label className="text-xs text-gray-600">Date From</Label>
-                    <Input
-                      type="date"
-                      value={dateFrom}
-                      onChange={(e) => setDateFrom(e.target.value)}
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-gray-600">Date To</Label>
-                    <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="mt-1" />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-gray-600">Score From</Label>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      value={scoreFrom}
-                      onChange={(e) => setScoreFrom(e.target.value)}
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-gray-600">Score To</Label>
-                    <Input
-                      type="number"
-                      placeholder="100"
-                      value={scoreTo}
-                      onChange={(e) => setScoreTo(e.target.value)}
-                      className="mt-1"
-                    />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label className="text-xs text-gray-600">Status</Label>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {["HOT", "IMMEDIATE_HOT", "WARM", "COLD", "CONTACTED"].map((status) => (
-                        <label key={status} className="flex items-center gap-2 text-sm">
-                          <Checkbox
-                            checked={selectedStatuses.includes(status)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setSelectedStatuses([...selectedStatuses, status])
-                              } else {
-                                setSelectedStatuses(selectedStatuses.filter((s) => s !== status))
-                              }
-                            }}
-                          />
-                          {status}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label className="text-xs text-gray-600">Tags</Label>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {["MBA", "Engineering", "USA", "UK", "Canada", "High-Budget"].map((tag) => (
-                        <label key={tag} className="flex items-center gap-2 text-sm">
-                          <Checkbox
-                            checked={selectedTags.includes(tag)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setSelectedTags([...selectedTags, tag])
-                              } else {
-                                setSelectedTags(selectedTags.filter((t) => t !== tag))
-                              }
-                            }}
-                          />
-                          {tag}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <BulkActionBar
+            selectedCount={selectedLeads.length}
+            totalVisible={filteredLeads.length}
+            onSelectAll={(checked) => setSelectedLeads(checked ? filteredLeads.map((l) => l.id) : [])}
+            onBulkAssign={() => setShowBulkAssignDialog(true)}
+            onClear={() => setSelectedLeads([])}
+          />
 
-          {selectedLeads.length > 0 && (
-            <Card className="bg-blue-50 border-blue-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Checkbox
-                      checked={selectedLeads.length === filteredLeads.length}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedLeads(filteredLeads.map((l) => l.id))
-                        } else {
-                          setSelectedLeads([])
-                        }
-                      }}
-                    />
-                    <span className="font-medium text-blue-900">{selectedLeads.length} leads selected</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      onClick={() => setShowBulkAssignDialog(true)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      <Users className="w-4 h-4 mr-2" />
-                      Bulk Assign
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSelectedLeads([])}
-                      className="border-blue-600 text-blue-600"
-                    >
-                      <X className="w-4 h-4 mr-2" />
-                      Clear
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Tabs */}
-          <Card>
-            <CardContent className="p-0">
-              <div className="bg-gray-50 border-b border-gray-200 overflow-x-auto custom-scrollbar">
-                <div className="flex min-w-max">
-                  {tabs.map((tab) => {
-                    const Icon = tab.icon
-                    const isActive = activeTab === tab.id
-
-                    // Define badge colors based on tab type
-                    let badgeClass = ""
-                    if (tab.id === "immediate") {
-                      badgeClass = isActive ? "bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md" : "bg-white text-red-600 border border-red-400"
-                    } else if (tab.id === "hot") {
-                      badgeClass = isActive ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-sm" : "bg-white text-orange-600 border border-orange-300"
-                    } else if (tab.id === "warm") {
-                      badgeClass = isActive ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-sm" : "bg-white text-yellow-600 border border-yellow-300"
-                    } else if (tab.id === "cold") {
-                      badgeClass = isActive ? "bg-gradient-to-r from-blue-400 to-blue-500 text-white shadow-sm" : "bg-white text-blue-600 border border-blue-300"
-                    } else if (tab.id === "feature") {
-                      badgeClass = isActive ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-sm" : "bg-white text-purple-600 border border-purple-300"
-                    } else if (tab.id === "contacted") {
-                      badgeClass = isActive ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-sm" : "bg-white text-green-600 border border-green-300"
-                    } else {
-                      badgeClass = isActive ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm" : "bg-white text-blue-600 border border-blue-300"
-                    }
-
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2 px-6 py-3 border-b-2 transition-all whitespace-nowrap ${isActive
-                          ? "border-blue-600 text-blue-600 bg-white"
-                          : "border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                          }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                        <span className="font-medium">{tab.label}</span>
-                        <Badge variant="outline" className={`${badgeClass} font-semibold transition-all duration-200`}>
-                          {tab.count.toLocaleString()}
-                        </Badge>
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              <div className="p-4">
-                <p className="text-sm text-gray-600">
-                  Showing <strong className="text-gray-900">{filteredLeads.length}</strong> of{" "}
-                  <strong className="text-gray-900">{leads.length}</strong> leads
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto custom-scrollbar" style={{ minHeight: isLoading ? '600px' : 'auto' }}>
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-4 py-3 text-left">
-                        <Checkbox
-                          checked={selectedLeads.length === filteredLeads.length && filteredLeads.length > 0}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setSelectedLeads(filteredLeads.map((l) => l.id))
-                            } else {
-                              setSelectedLeads([])
-                            }
-                          }}
-                        />
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Lead Info</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Phone</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Owner</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Score</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Tags</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {isLoading ? (
-                      // Skeleton loading rows when data is loading
-                      Array.from({ length: pageSize }).map((_, index) => (
-                        <tr
-                          key={`skeleton-${index}`}
-                          className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors"
-                          style={{ animationDelay: `${index * 30}ms` }}
-                        >
-                          <td className="px-4 py-4">
-                            <Skeleton className="h-4 w-4 rounded" />
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="flex items-center gap-3">
-                              <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
-                              <div className="space-y-2 flex-1">
-                                <Skeleton className="h-4 w-36" />
-                                <Skeleton className="h-3 w-52" />
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-4">
-                            <Skeleton className="h-4 w-28" />
-                          </td>
-                          <td className="px-4 py-4">
-                            <Skeleton className="h-6 w-20 rounded-full" />
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="flex items-center gap-2">
-                              <Skeleton className="h-6 w-6 rounded-full" />
-                              <Skeleton className="h-4 w-24" />
-                            </div>
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="space-y-1">
-                              <Skeleton className="h-4 w-12" />
-                              <Skeleton className="h-2 w-16 rounded-full" />
-                            </div>
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="flex gap-1.5">
-                              <Skeleton className="h-5 w-14 rounded-full" />
-                              <Skeleton className="h-5 w-16 rounded-full" />
-                            </div>
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="flex gap-2">
-                              <Skeleton className="h-8 w-8 rounded-md" />
-                              <Skeleton className="h-8 w-8 rounded-md" />
-                              <Skeleton className="h-8 w-8 rounded-md" />
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      filteredLeads.map((lead) => {
-                        const ownership = leadOwnerships.get(lead.id);
-                        const accessLevel = getUserAccessLevel(lead.id)
-                        const canEdit = canEditLead(lead.id)
-
-                        return (
-                          <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
-                            <td className="px-4 py-3">
-                              <Checkbox
-                                checked={selectedLeads.includes(lead.id)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    setSelectedLeads([...selectedLeads, lead.id])
-                                  } else {
-                                    setSelectedLeads(selectedLeads.filter((id) => id !== lead.id))
-                                  }
-                                }}
-                              />
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                  {lead.name.charAt(0)}
-                                </div>
-                                <div>
-                                  <p className="font-semibold text-gray-900 text-sm">{lead.name}</p>
-                                  <p className="text-xs text-gray-500">{lead.email}</p>
-                                  {accessLevel !== "none" && accessLevel !== "owner" && (
-                                    <Badge
-                                      variant="outline"
-                                      className={`text-xs mt-1 ${accessLevel === "editor" ? "border-blue-400 text-blue-700" : "border-gray-400 text-gray-700"
-                                        }`}
-                                    >
-                                      {accessLevel === "editor" ? "Can Edit" : "View Only"}
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3">
-                              <p className="text-sm text-gray-900">{lead.phone_number || lead.phone}</p>
-                            </td>
-                            <td className="px-4 py-3">
-                              <Badge
-                                variant="outline"
-                                className={
-                                  lead.status === "IMMEDIATE_HOT"
-                                    ? "bg-gradient-to-r from-red-600 to-red-700 text-white border-0 shadow-md font-bold"
-                                    : lead.status === "HOT"
-                                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 shadow-sm"
-                                      : lead.status === "WARM"
-                                        ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0 shadow-sm"
-                                        : lead.status === "COLD"
-                                          ? "bg-gradient-to-r from-blue-400 to-blue-500 text-white border-0 shadow-sm"
-                                          : lead.status === "FEATURE_LEAD"
-                                            ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 shadow-sm"
-                                            : lead.status === "CONTACTED"
-                                              ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0 shadow-sm"
-                                              : "bg-gray-100 text-gray-700 border-gray-300"
-                                }
-                              >
-                                {lead.status === "IMMEDIATE_HOT"
-                                  ? "IMMEDIATE HOT"
-                                  : lead.status === "FEATURE_LEAD"
-                                    ? "FEATURE LEAD"
-                                    : lead.status === "CONTACTED"
-                                      ? "CONTACTED"
-                                      : lead.status === "WARM"
-                                        ? "WARM"
-                                        : lead.status === "COLD"
-                                          ? "COLD"
-                                          : lead.status === "HOT"
-                                            ? "HOT"
-                                            : lead.status}
-                              </Badge>
-                            </td>
-                            <td className="px-4 py-3">
-                              {ownership ? (
-                                <div className="flex items-center gap-2">
-                                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="text-xs font-semibold text-blue-700">
-                                      {ownership.ownerName.charAt(0)}
-                                    </span>
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-900">{ownership.ownerName}</p>
-                                    {ownership.ownerId === currentUser.id && (
-                                      <Badge variant="outline" className="text-xs border-green-400 text-green-700 mt-0.5">
-                                        You
-                                      </Badge>
-                                    )}
-                                  </div>
-                                </div>
-                              ) : (
-                                <span className="text-xs text-gray-400">Unassigned</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-2">
-                                <span className="text-lg font-bold text-blue-600">{lead.score}</span>
-                                <span className="text-gray-400 text-xs">/100</span>
-                              </div>
-                              <Progress value={lead.score} className="h-1 mt-1 w-16" />
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex flex-wrap gap-1">
-                                {lead.tags?.slice(0, 2).map((tag: string) => (
-                                  <Badge key={tag} variant="outline" className="text-xs">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-8 w-8 p-0"
-                                  onClick={() => router.push(`/admin/leads/${lead.id}`)}
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </Button>
-                                {!isCounselor && (
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="h-8 w-8 p-0 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
-                                    title="Reassign lead"
-                                    onClick={() => openReassignDialog(lead.id)}
-                                  >
-                                    <ArrowRightLeft className="w-4 h-4" />
-                                  </Button>
-                                )}
-                                {canEdit && (
-                                  <>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setSelectedLeadForAction(lead)
-                                        setShowEmailDialog(true)
-                                      }}
-                                    >
-                                      <Mail className="w-4 h-4" />
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setSelectedLeadForAction(lead)
-                                        setShowSMSDialog(true)
-                                      }}
-                                    >
-                                      <MessageSquare className="w-4 h-4" />
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setSelectedLeadForAction(lead)
-                                        setShowNotesDialog(true)
-                                      }}
-                                    >
-                                      <FileText className="w-4 h-4" />
-                                    </Button>
-                                  </>
-                                )}
-                                {!canEdit && accessLevel === "viewer" && (
-                                  <Badge variant="outline" className="text-xs border-gray-400 text-gray-600">
-                                    View Only
-                                  </Badge>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        )
-                      })
-                    )}
-                    {!isLoading && filteredLeads.length === 0 && (
-                      <tr>
-                        <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
-                          No leads found. Try adjusting your filters.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination Controls */}
-              {!isLoading && totalElements > 0 && (
-                <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="text-sm text-gray-700">
-                      Showing <span className="font-semibold">{currentPage * pageSize + 1}</span> to{" "}
-                      <span className="font-semibold">
-                        {Math.min((currentPage + 1) * pageSize, totalElements)}
-                      </span>{" "}
-                      of <span className="font-semibold">{totalElements}</span> leads
-                    </div>
-                    <Select
-                      value={pageSize.toString()}
-                      onValueChange={(value) => {
-                        setPageSize(Number(value))
-                        setCurrentPage(0)
-                      }}
-                    >
-                      <SelectTrigger className="w-[100px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="10">10 / page</SelectItem>
-                        <SelectItem value="25">25 / page</SelectItem>
-                        <SelectItem value="50">50 / page</SelectItem>
-                        <SelectItem value="100">100 / page</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(0)}
-                      disabled={currentPage === 0}
-                    >
-                      First
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(currentPage - 1)}
-                      disabled={currentPage === 0}
-                    >
-                      Previous
-                    </Button>
-                    <div className="text-sm text-gray-700">
-                      Page <span className="font-semibold">{currentPage + 1}</span> of{" "}
-                      <span className="font-semibold">{totalPages}</span>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      disabled={currentPage >= totalPages - 1}
-                    >
-                      Next
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(totalPages - 1)}
-                      disabled={currentPage >= totalPages - 1}
-                    >
-                      Last
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <LeadsTable
+            leads={filteredLeads}
+            isLoading={isLoading}
+            pageSize={pageSize}
+            selectedLeads={selectedLeads}
+            onSelectedLeadsChange={setSelectedLeads}
+            leadOwnerships={leadOwnerships}
+            currentUserId={currentUser.id}
+            isCounselor={isCounselor}
+            getAccessLevel={getUserAccessLevel}
+            canEdit={canEditLead}
+            onReassign={openReassignDialog}
+            onEmail={(lead) => { setSelectedLeadForAction(lead); setShowEmailDialog(true) }}
+            onSMS={(lead) => { setSelectedLeadForAction(lead); setShowSMSDialog(true) }}
+            onNotes={(lead) => { setSelectedLeadForAction(lead); setShowNotesDialog(true) }}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalElements={totalElements}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(0) }}
+          />
         </TabsContent>
 
-        {/* Assign Data Tab */}
+        {/* Campaigns Tab */}
         {!isCounselor && (
           <TabsContent value="assign" className="space-y-4">
             <div className="flex items-center justify-between">
@@ -1813,241 +1237,32 @@ export default function AdminLeads() {
                 <h2 className="text-xl font-bold text-gray-900">Campaign Management</h2>
                 <p className="text-sm text-gray-600 mt-1">Create campaigns and assign bulk data to your team</p>
               </div>
-              <Dialog open={createCampaignDialogOpen} onOpenChange={setCreateCampaignDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create New Campaign
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-lg">
-                  <DialogHeader>
-                    <DialogTitle>Create New Campaign</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label>Campaign Name</Label>
-                      <Input
-                        placeholder="e.g., Education Fair Mumbai 2024"
-                        value={campaignName}
-                        onChange={(e) => setCampaignName(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Source</Label>
-                      <Select value={campaignSource} onValueChange={setCampaignSource}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select source" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="offline">Offline Event</SelectItem>
-                          <SelectItem value="google">Google Ads</SelectItem>
-                          <SelectItem value="facebook">Facebook Ads</SelectItem>
-                          <SelectItem value="instagram">Instagram</SelectItem>
-                          <SelectItem value="referral">Referral</SelectItem>
-                          <SelectItem value="partner">Partner</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Upload Leads (CSV/Excel)</Label>
-                      <Input
-                        type="file"
-                        accept=".csv,.xlsx,.xls"
-                        onChange={(e) => setCampaignFile(e.target.files?.[0] || null)}
-                      />
-                      <p className="text-xs text-gray-500">Upload a CSV or Excel file with lead data</p>
-                    </div>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <div className="flex items-start gap-2">
-                        <QrCode className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-medium text-blue-900">QR Code Generation</p>
-                          <p className="text-xs text-blue-700 mt-1">
-                            A unique QR code will be generated for this campaign to track offline leads
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" onClick={() => setCreateCampaignDialogOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleCreateCampaign}>
-                        Create Campaign
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <CreateCampaignDialog
+                open={createCampaignDialogOpen}
+                onOpenChange={setCreateCampaignDialogOpen}
+                campaignName={campaignName}
+                campaignSource={campaignSource}
+                onCampaignNameChange={setCampaignName}
+                onCampaignSourceChange={setCampaignSource}
+                onFileChange={setCampaignFile}
+                onSubmit={handleCreateCampaign}
+              />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-600 mb-1">Total Campaigns</p>
-                      <p className="text-2xl font-bold text-gray-900">{campaigns.length}</p>
-                    </div>
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <FolderKanban className="w-5 h-5 text-blue-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            <CampaignStatsCards
+              totalCampaigns={stats.totalCampaigns}
+              totalLeads={stats.totalCampaignLeads}
+              assignedLeads={stats.assignedLeads}
+              unassignedLeads={stats.unassignedLeads}
+              duplicates={stats.duplicates}
+            />
 
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-600 mb-1">Total Leads</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {(stats.totalCampaignLeads || 0).toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <Users className="w-5 h-5 text-green-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-600 mb-1">Assigned</p>
-                      <p className="text-2xl font-bold text-gray-900">{(stats.assignedLeads || 0).toLocaleString()}</p>
-                    </div>
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <UserCheck className="w-5 h-5 text-purple-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-600 mb-1">Duplicates</p>
-                      <p className="text-2xl font-bold text-gray-900">{(stats.duplicates || 0).toLocaleString()}</p>
-                    </div>
-                    <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                      <AlertCircle className="w-5 h-5 text-orange-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Campaign Name
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Source
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Total Leads
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Assigned
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Unassigned
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Duplicates
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {campaigns.map((campaign) => (
-                        <tr key={campaign.id} className="hover:bg-gray-50 transition-colors">
-                          <td className="px-4 py-3">
-                            <div>
-                              <p className="font-semibold text-gray-900 text-sm">{campaign.name}</p>
-                              <p className="text-xs text-gray-500">Created: {campaign.createdDate}</p>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <Badge className="bg-blue-100 text-blue-700">{campaign.source}</Badge>
-                          </td>
-                          <td className="px-4 py-3">
-                            <p className="text-sm font-semibold text-gray-900">
-                              {(campaign.totalLeads || 0).toLocaleString()}
-                            </p>
-                          </td>
-                          <td className="px-4 py-3">
-                            <p className="text-sm font-semibold text-green-600">
-                              {(campaign.assignedLeads || 0).toLocaleString()}
-                            </p>
-                          </td>
-                          <td className="px-4 py-3">
-                            <p className="text-sm font-semibold text-orange-600">
-                              {(campaign.unassignedLeads || 0).toLocaleString()}
-                            </p>
-                          </td>
-                          <td className="px-4 py-3">
-                            <p className="text-sm font-semibold text-red-600">
-                              {(campaign.duplicates || 0).toLocaleString()}
-                            </p>
-                          </td>
-                          <td className="px-4 py-3">
-                            <Badge className={getStatusColor(campaign.status)}>{campaign.status}</Badge>
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-1">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-8 px-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                              >
-                                <Eye className="w-4 h-4 mr-1" />
-                                View
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-8 px-2 text-green-600 hover:text-green-700 hover:bg-green-50"
-                                onClick={() => {
-                                  setSelectedCampaign(campaign.name)
-                                  setActiveMainTab("allocate")
-                                }}
-                              >
-                                <UserCheck className="w-4 h-4 mr-1" />
-                                Assign
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-8 px-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-                              >
-                                <QrCode className="w-4 h-4 mr-1" />
-                                QR
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
+            <CampaignTable
+              campaigns={campaigns}
+              getStatusColor={getStatusColor}
+              onView={(name) => { setSelectedCampaignFilter(name); setActiveMainTab("leads") }}
+              onAssign={(name) => { setSelectedCampaign(name); setActiveMainTab("allocate") }}
+            />
           </TabsContent>
         )}
 
@@ -3361,60 +2576,17 @@ export default function AdminLeads() {
         </DialogContent>
       </Dialog>
 
-      {/* Reassign Lead Dialog */}
-      <Dialog open={showReassignDialog} onOpenChange={setShowReassignDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ArrowRightLeft className="w-5 h-5 text-indigo-600" />
-              Reassign Lead
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-2">
-            <div className="space-y-2">
-              <Label>New Counselor</Label>
-              <Select value={reassignCounselorId} onValueChange={setReassignCounselorId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a counselor" />
-                </SelectTrigger>
-                <SelectContent>
-                  {counselorsList.map((c: any) => (
-                    <SelectItem key={c.id} value={String(c.id)}>
-                      {c.firstName} {c.lastName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Reason (optional)</Label>
-              <Textarea
-                placeholder="Why is this lead being reassigned?"
-                value={reassignReason}
-                onChange={(e) => setReassignReason(e.target.value)}
-                rows={3}
-              />
-            </div>
-            <div className="flex gap-3 pt-2">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => setShowReassignDialog(false)}
-                disabled={reassignLoading}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
-                onClick={handleReassign}
-                disabled={!reassignCounselorId || reassignLoading}
-              >
-                {reassignLoading ? "Reassigning..." : "Reassign"}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ReassignLeadDialog
+        open={showReassignDialog}
+        onOpenChange={setShowReassignDialog}
+        counselors={counselorsList}
+        counselorId={reassignCounselorId}
+        onCounselorIdChange={setReassignCounselorId}
+        reason={reassignReason}
+        onReasonChange={setReassignReason}
+        loading={reassignLoading}
+        onSubmit={handleReassign}
+      />
     </div>
   )
 }

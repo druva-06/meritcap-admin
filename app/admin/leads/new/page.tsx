@@ -94,7 +94,7 @@ export default function AddNewLeadPage() {
   useEffect(() => {
     const fetchCounselors = async () => {
       try {
-        const response = await api.get("/user/counselors")
+        const response = await api.get("/api/user/counselors")
         if (response.success && response.data) {
           setCounselors(response.data)
         }
