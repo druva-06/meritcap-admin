@@ -20,12 +20,13 @@ import { mockData } from "@/lib/mock-data"
 import { toast } from "@/hooks/use-toast"
 import { api } from "@/lib/api-client"
 // Assuming apiUtils and generateQRCode are in a separate file, e.g., lib/api.ts
-import { apiUtils, generateQRCode } from "@/lib/apiUtils" // Placeholder, adjust path as needed
+import { apiUtils } from "@/lib/apiUtils" // Placeholder, adjust path as needed
 import { reassignLead, getCampaigns, createCampaignApi } from "@/lib/api/leads"
 import type { Campaign } from "./types"
 import { CreateCampaignDialog } from "./components/campaigns/CreateCampaignDialog"
 import { CampaignStatsCards } from "./components/campaigns/CampaignStatsCards"
 import { CampaignTable } from "./components/campaigns/CampaignTable"
+import { QRCodeDialog } from "./components/campaigns/QRCodeDialog"
 import { LeadStatsCards, LeadsFilterBar, BulkActionBar, LeadsTable, ReassignLeadDialog } from "./components/all-leads"
 
 // Mock User and other types for demonstration
@@ -215,7 +216,9 @@ export default function AdminLeads() {
   const [campaignName, setCampaignName] = useState("")
   const [campaignSource, setCampaignSource] = useState("")
   const [campaignFile, setCampaignFile] = useState<File | null>(null)
-  const [qrCodeUrl, setQrCodeUrl] = useState("")
+
+  // QR dialog state
+  const [qrDialogCampaign, setQrDialogCampaign] = useState<Campaign | null>(null)
 
   // Allocation form states
   const [selectedCampaign, setSelectedCampaign] = useState("")
@@ -571,15 +574,9 @@ export default function AdminLeads() {
     }
 
     try {
-      // Generate QR code URL for this campaign
-      const qrCode = await generateQRCode(campaignName)
-      setQrCodeUrl(qrCode)
-
-      // Create campaign via real API
       const newCampaign = await createCampaignApi({
         name: campaignName,
         source: campaignSource,
-        qrCode: qrCode,
       })
 
       setCampaigns((prev) => [newCampaign, ...prev])
@@ -1262,6 +1259,13 @@ export default function AdminLeads() {
               getStatusColor={getStatusColor}
               onView={(name) => { setSelectedCampaignFilter(name); setActiveMainTab("leads") }}
               onAssign={(name) => { setSelectedCampaign(name); setActiveMainTab("allocate") }}
+              onQR={(c) => setQrDialogCampaign(c)}
+            />
+
+            <QRCodeDialog
+              campaign={qrDialogCampaign}
+              open={!!qrDialogCampaign}
+              onOpenChange={(v) => { if (!v) setQrDialogCampaign(null) }}
             />
           </TabsContent>
         )}

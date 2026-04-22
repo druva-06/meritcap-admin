@@ -16,6 +16,7 @@ import { api } from "@/lib/api-client"
 import { toast } from "@/hooks/use-toast"
 import { reassignLead, getLeadAssignmentHistory } from "@/lib/api/leads"
 import type { AssignmentHistoryEntry } from "@/lib/api/leads"
+import { ReassignLeadDialog } from "../components/ReassignLeadDialog"
 import {
   ArrowLeft,
   Phone,
@@ -520,7 +521,7 @@ export default function LeadDetailPage({ params }: { params: { id: string } }) {
     try {
       await reassignLead(Number(params.id), Number(reassignCounselorId), reassignReason)
       const counselor = counselorsList.find((c) => String(c.id) === reassignCounselorId)
-      const newName = counselor ? `${counselor.firstName} ${counselor.lastName}` : "New Counselor"
+      const newName = counselor ? counselor.name : "New Counselor"
       setLead((prev: any) => ({ ...prev, assignedTo: newName, assignedToId: Number(reassignCounselorId) }))
       toast({ title: "Lead Reassigned", description: `Lead reassigned to ${newName}.` })
       setShowReassignDialog(false)
@@ -1469,60 +1470,17 @@ export default function LeadDetailPage({ params }: { params: { id: string } }) {
           </DialogContent>
         </Dialog>
 
-      {/* Reassign Lead Dialog */}
-      <Dialog open={showReassignDialog} onOpenChange={setShowReassignDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ArrowRightLeft className="w-5 h-5 text-indigo-600" />
-              Reassign Lead
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-2">
-            <div className="space-y-2">
-              <Label>New Counselor</Label>
-              <Select value={reassignCounselorId} onValueChange={setReassignCounselorId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a counselor" />
-                </SelectTrigger>
-                <SelectContent>
-                  {counselorsList.map((c: any) => (
-                    <SelectItem key={c.id} value={String(c.id)}>
-                      {c.firstName} {c.lastName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Reason (optional)</Label>
-              <Textarea
-                placeholder="Why is this lead being reassigned?"
-                value={reassignReason}
-                onChange={(e) => setReassignReason(e.target.value)}
-                rows={3}
-              />
-            </div>
-            <div className="flex gap-3 pt-2">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => setShowReassignDialog(false)}
-                disabled={reassignLoading}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
-                onClick={handleReassign}
-                disabled={!reassignCounselorId || reassignLoading}
-              >
-                {reassignLoading ? "Reassigning..." : "Reassign"}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ReassignLeadDialog
+        open={showReassignDialog}
+        onOpenChange={setShowReassignDialog}
+        counselors={counselorsList}
+        counselorId={reassignCounselorId}
+        onCounselorIdChange={setReassignCounselorId}
+        reason={reassignReason}
+        onReasonChange={setReassignReason}
+        loading={reassignLoading}
+        onSubmit={handleReassign}
+      />
       </div>
     </div>
   )

@@ -63,7 +63,6 @@ export async function createCampaignApi(data: {
   name: string
   source: string
   description?: string
-  qrCode?: string
 }): Promise<Campaign> {
   const result = await apiRequest<Campaign>("/api/campaigns", { method: "POST", body: data })
   if (!result.success || !result.data) throw new Error(result.message || "Failed to create campaign")

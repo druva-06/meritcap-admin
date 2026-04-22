@@ -11,9 +11,10 @@ interface Props {
   getStatusColor: (status: string) => string
   onView: (campaignName: string) => void
   onAssign: (campaignName: string) => void
+  onQR: (campaign: Campaign) => void
 }
 
-export function CampaignTable({ campaigns, getStatusColor, onView, onAssign }: Props) {
+export function CampaignTable({ campaigns, getStatusColor, onView, onAssign, onQR }: Props) {
   return (
     <Card>
       <CardContent className="p-0">
@@ -97,6 +98,7 @@ export function CampaignTable({ campaigns, getStatusColor, onView, onAssign }: P
                           size="sm"
                           variant="ghost"
                           className="h-8 px-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                          onClick={() => onQR(campaign)}
                         >
                           <QrCode className="w-4 h-4 mr-1" />
                           QR
