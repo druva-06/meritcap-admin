@@ -1,15 +1,36 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { UserCheck, Activity, CheckCircle2, UserX } from "lucide-react"
 import type { CounselorWorkload } from "@/lib/api/leads"
 
 interface Props {
   workload: CounselorWorkload[]
   totalLeadsCount: number
+  isLoading?: boolean
 }
 
-export function AllocateStatsCards({ workload, totalLeadsCount }: Props) {
+export function AllocateStatsCards({ workload, totalLeadsCount, isLoading }: Props) {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i} className="hover:shadow-md transition-shadow" style={{ animationDelay: `${i * 100}ms` }}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-7 w-16" />
+                </div>
+                <Skeleton className="h-10 w-10 rounded-lg" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )
+  }
   const totalAllocated = workload.reduce((sum, c) => sum + c.totalLeads, 0)
   const inProgress = workload.reduce(
     (sum, c) => sum + c.hotLeads + c.immediateHotLeads + c.warmLeads + c.coldLeads + c.featureLeads,

@@ -6,16 +6,17 @@ import type { CounselorWorkload } from "@/lib/api/leads"
 import type { Campaign } from "../../types"
 import { AllocateStatsCards } from "./AllocateStatsCards"
 import { CampaignAllocatePanel } from "./CampaignAllocatePanel"
-import { CounselorWorkloadGrid } from "./CounselorWorkloadGrid"
+import { CounselorAllocationTable } from "./CounselorAllocationTable"
 import { RoundRobinPanel } from "./RoundRobinPanel"
 
 interface Props {
   campaigns: Campaign[]
   totalLeadsCount: number
   initialCampaignName?: string
+  onViewLeads: (counselorId: number, counselorName: string) => void
 }
 
-export function AllocateLeadsTab({ campaigns, totalLeadsCount, initialCampaignName = "" }: Props) {
+export function AllocateLeadsTab({ campaigns, totalLeadsCount, initialCampaignName = "", onViewLeads }: Props) {
   const [workload, setWorkload] = useState<CounselorWorkload[]>([])
   const [workloadLoading, setWorkloadLoading] = useState(true)
 
@@ -53,11 +54,11 @@ export function AllocateLeadsTab({ campaigns, totalLeadsCount, initialCampaignNa
         />
       </div>
 
-      <AllocateStatsCards workload={workload} totalLeadsCount={totalLeadsCount} />
+      <AllocateStatsCards workload={workload} totalLeadsCount={totalLeadsCount} isLoading={workloadLoading} />
 
       <RoundRobinPanel unassignedCount={unassignedCount} onComplete={fetchWorkload} />
 
-      <CounselorWorkloadGrid workload={workload} loading={workloadLoading} />
+      <CounselorAllocationTable workload={workload} loading={workloadLoading} onViewLeads={onViewLeads} />
     </div>
   )
 }

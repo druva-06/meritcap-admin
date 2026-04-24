@@ -1,6 +1,7 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { AlertCircle, FolderKanban, UserCheck, UserX, Users } from "lucide-react"
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
   assignedLeads: number
   unassignedLeads: number
   duplicates: number
+  isLoading?: boolean
 }
 
 export function CampaignStatsCards({
@@ -17,7 +19,27 @@ export function CampaignStatsCards({
   assignedLeads,
   unassignedLeads,
   duplicates,
+  isLoading,
 }: Props) {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Card key={i} className="hover:shadow-md transition-shadow" style={{ animationDelay: `${i * 100}ms` }}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-7 w-16" />
+                </div>
+                <Skeleton className="h-10 w-10 rounded-lg" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )
+  }
   return (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
       <Card className="hover:shadow-md transition-shadow">

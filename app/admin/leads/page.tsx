@@ -114,6 +114,7 @@ export default function AdminLeads() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCampaignFilter, setSelectedCampaignFilter] = useState("all")
   const [isLoading, setIsLoading] = useState(true)
+  const [campaignsLoading, setCampaignsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(0)
   const [pageSize, setPageSize] = useState(10)
   const [totalPages, setTotalPages] = useState(0)
@@ -222,6 +223,10 @@ export default function AdminLeads() {
   // selectedCampaign is used for cross-tab navigation: Campaigns "Assign" button → Allocate tab
   const [selectedCampaign, setSelectedCampaign] = useState("")
 
+  // Counselor filter: set from Allocate tab "View Leads" action
+  const [assignedCounselorFilter, setAssignedCounselorFilter] = useState<number | null>(null)
+  const [assignedCounselorName, setAssignedCounselorName] = useState<string>("")
+
   // Fetch leads from backend API
   const fetchLeads = async () => {
     setIsLoading(true)
@@ -232,6 +237,9 @@ export default function AdminLeads() {
       if (searchTerm) params.append('search', searchTerm)
       if (selectedCampaignFilter && selectedCampaignFilter !== 'all') {
         params.append('campaign', selectedCampaignFilter)
+      }
+      if (assignedCounselorFilter) {
+        params.append('assignedTo', String(assignedCounselorFilter))
       }
       if (dateFrom) params.append('dateFrom', dateFrom)
       if (dateTo) params.append('dateTo', dateTo)
@@ -317,11 +325,14 @@ export default function AdminLeads() {
   }
 
   const fetchCampaigns = async () => {
+    setCampaignsLoading(true)
     try {
       const data = await getCampaigns()
       setCampaigns(data)
     } catch (error) {
       console.error('Error fetching campaigns:', error)
+    } finally {
+      setCampaignsLoading(false)
     }
   }
 
@@ -332,7 +343,7 @@ export default function AdminLeads() {
     }, 500) // Debounce for 500ms
 
     return () => clearTimeout(timeoutId)
-  }, [searchTerm, selectedCampaignFilter, dateFrom, dateTo, scoreFrom, scoreTo, selectedStatuses, selectedTags, currentPage, pageSize])
+  }, [searchTerm, selectedCampaignFilter, assignedCounselorFilter, dateFrom, dateTo, scoreFrom, scoreTo, selectedStatuses, selectedTags, currentPage, pageSize])
 
   // Fetch total leads count and campaigns on mount
   useEffect(() => {
@@ -1108,6 +1119,7 @@ export default function AdminLeads() {
             assignedLeads={statusCounts.assignedLeads || 0}
             duplicates={stats.duplicates || 0}
             avgScore={Math.round(stats.avgScore)}
+            isLoading={isLoading}
           />
 
           <LeadsFilterBar
@@ -1129,7 +1141,22 @@ export default function AdminLeads() {
             onSelectedStatusesChange={(v) => { setSelectedStatuses(v); setCurrentPage(0) }}
             selectedTags={selectedTags}
             onSelectedTagsChange={(v) => { setSelectedTags(v); setCurrentPage(0) }}
+            isLoading={isLoading}
           />
+
+          {assignedCounselorFilter && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500">Filtered by counselor:</span>
+              <Badge
+                variant="secondary"
+                className="gap-1 cursor-pointer hover:bg-red-50 hover:text-red-600"
+                onClick={() => { setAssignedCounselorFilter(null); setAssignedCounselorName(""); setCurrentPage(0) }}
+              >
+                {assignedCounselorName}
+                <X className="w-3 h-3" />
+              </Badge>
+            </div>
+          )}
 
           <BulkActionBar
             selectedCount={selectedLeads.length}
@@ -1188,6 +1215,7 @@ export default function AdminLeads() {
               assignedLeads={stats.assignedLeads}
               unassignedLeads={stats.unassignedLeads}
               duplicates={stats.duplicates}
+              isLoading={campaignsLoading}
             />
 
             <CampaignTable
@@ -1196,6 +1224,7 @@ export default function AdminLeads() {
               onView={(name) => { setSelectedCampaignFilter(name); setActiveMainTab("leads") }}
               onAssign={(name) => { setSelectedCampaign(name); setActiveMainTab("allocate") }}
               onQR={(c) => setQrDialogCampaign(c)}
+              isLoading={campaignsLoading}
             />
 
             <QRCodeDialog
@@ -1213,6 +1242,12 @@ export default function AdminLeads() {
               campaigns={campaigns}
               totalLeadsCount={totalLeadsCount}
               initialCampaignName={selectedCampaign}
+              onViewLeads={(id, name) => {
+                setAssignedCounselorFilter(id)
+                setAssignedCounselorName(name)
+                setActiveMainTab("leads")
+                setCurrentPage(0)
+              }}
             />
           </TabsContent>
         )}

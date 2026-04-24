@@ -1,6 +1,7 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Users, CheckCircle, Merge, Zap } from "lucide-react"
 
 interface LeadStatsCardsProps {
@@ -8,9 +9,30 @@ interface LeadStatsCardsProps {
   assignedLeads: number
   duplicates: number
   avgScore: number
+  isLoading?: boolean
 }
 
-export function LeadStatsCards({ totalLeads, assignedLeads, duplicates, avgScore }: LeadStatsCardsProps) {
+export function LeadStatsCards({ totalLeads, assignedLeads, duplicates, avgScore, isLoading }: LeadStatsCardsProps) {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i} style={{ animationDelay: `${i * 100}ms` }}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-7 w-16" />
+                </div>
+                <Skeleton className="h-8 w-8 rounded-lg" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <Card>

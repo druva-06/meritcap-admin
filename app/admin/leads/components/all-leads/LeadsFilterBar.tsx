@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Search, Filter } from "lucide-react"
 
 const STATUS_OPTIONS = ["HOT", "IMMEDIATE_HOT", "WARM", "COLD", "FEATURE_LEAD", "CONTACTED"]
@@ -30,6 +31,7 @@ interface LeadsFilterBarProps {
   onSelectedStatusesChange: (value: string[]) => void
   selectedTags: string[]
   onSelectedTagsChange: (value: string[]) => void
+  isLoading?: boolean
 }
 
 export function LeadsFilterBar({
@@ -51,7 +53,22 @@ export function LeadsFilterBar({
   onSelectedStatusesChange,
   selectedTags,
   onSelectedTagsChange,
+  isLoading,
 }: LeadsFilterBarProps) {
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-10 flex-1" />
+            <Skeleton className="h-10 w-48" />
+            <Skeleton className="h-10 w-36" />
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   const toggleStatus = (status: string, checked: boolean) => {
     if (checked) onSelectedStatusesChange([...selectedStatuses, status])
     else onSelectedStatusesChange(selectedStatuses.filter((s) => s !== status))

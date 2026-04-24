@@ -114,12 +114,15 @@ export function CampaignAllocatePanel({
           {/* Campaign selector */}
           <div className="space-y-2">
             <Label>Campaign</Label>
-            <Select value={campaignName} onValueChange={setCampaignName}>
+            <Select
+              value={campaignName || "__all__"}
+              onValueChange={(v) => setCampaignName(v === "__all__" ? "" : v)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="All unassigned leads" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All unassigned leads (no campaign filter)</SelectItem>
+                <SelectItem value="__all__">All unassigned leads (no campaign filter)</SelectItem>
                 {campaigns.map((c) => (
                   <SelectItem key={c.id} value={c.name}>
                     {c.name} ({(c.unassignedLeads || 0).toLocaleString()} available)

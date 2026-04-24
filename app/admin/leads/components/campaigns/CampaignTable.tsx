@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Eye, QrCode, UserCheck } from "lucide-react"
 import type { Campaign } from "../../types"
 
@@ -12,9 +13,10 @@ interface Props {
   onView: (campaignName: string) => void
   onAssign: (campaignName: string) => void
   onQR: (campaign: Campaign) => void
+  isLoading?: boolean
 }
 
-export function CampaignTable({ campaigns, getStatusColor, onView, onAssign, onQR }: Props) {
+export function CampaignTable({ campaigns, getStatusColor, onView, onAssign, onQR, isLoading }: Props) {
   return (
     <Card>
       <CardContent className="p-0">
@@ -35,7 +37,31 @@ export function CampaignTable({ campaigns, getStatusColor, onView, onAssign, onQ
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {campaigns.length === 0 ? (
+              {isLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={`skeleton-${i}`} style={{ animationDelay: `${i * 30}ms` }}>
+                    <td className="px-4 py-3">
+                      <div className="space-y-1">
+                        <Skeleton className="h-4 w-36" />
+                        <Skeleton className="h-3 w-28" />
+                      </div>
+                    </td>
+                    <td className="px-4 py-3"><Skeleton className="h-5 w-20 rounded-full" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-12" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-12" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-12" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-12" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-5 w-20 rounded-full" /></td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1">
+                        <Skeleton className="h-8 w-16 rounded-md" />
+                        <Skeleton className="h-8 w-16 rounded-md" />
+                        <Skeleton className="h-8 w-12 rounded-md" />
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : campaigns.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-8 text-center text-sm text-gray-500">
                     No campaigns yet. Create one to get started.
