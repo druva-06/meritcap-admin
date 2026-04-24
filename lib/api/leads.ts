@@ -68,3 +68,26 @@ export async function createCampaignApi(data: {
   if (!result.success || !result.data) throw new Error(result.message || "Failed to create campaign")
   return result.data
 }
+
+export interface DirectAssignRequest {
+  campaignName?: string
+  counselorId: number
+  count: number
+  sortBy?: "score" | "createdAt"
+}
+
+export interface DirectAssignResult {
+  assignedCount: number
+  requestedCount: number
+  counselorName: string
+  campaignName: string | null
+}
+
+export async function directAssignLeads(payload: DirectAssignRequest): Promise<DirectAssignResult> {
+  const result = await apiRequest<DirectAssignResult>("/api/leads/assign/direct", {
+    method: "POST",
+    body: payload,
+  })
+  if (!result.success || !result.data) throw new Error(result.message || "Direct assignment failed")
+  return result.data
+}

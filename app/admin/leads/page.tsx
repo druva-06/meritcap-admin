@@ -28,6 +28,7 @@ import { CampaignStatsCards } from "./components/campaigns/CampaignStatsCards"
 import { CampaignTable } from "./components/campaigns/CampaignTable"
 import { QRCodeDialog } from "./components/campaigns/QRCodeDialog"
 import { LeadStatsCards, LeadsFilterBar, BulkActionBar, LeadsTable, ReassignLeadDialog } from "./components/all-leads"
+import { AllocateLeadsTab } from "./components/allocate"
 
 // Mock User and other types for demonstration
 interface User {
@@ -150,7 +151,6 @@ export default function AdminLeads() {
   // Existing states
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [leads, setLeads] = useState<Lead[]>([])
-  const [allocations, setAllocations] = useState(mockData.allocations)
   const [callLogs, setCallLogs] = useState(mockData.callLogs)
 
   const [importHistory, setImportHistory] = useState(mockData.leadImportHistory)
@@ -199,7 +199,6 @@ export default function AdminLeads() {
 
   // Dialog visibility states
   const [createCampaignDialogOpen, setCreateCampaignDialogOpen] = useState(false)
-  const [allocateDialogOpen, setAllocateDialogOpen] = useState(false)
   const [reminderDialogOpen, setReminderDialogOpen] = useState(false)
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false)
   const [transferDialogOpen, setTransferDialogOpen] = useState(false)
@@ -220,10 +219,8 @@ export default function AdminLeads() {
   // QR dialog state
   const [qrDialogCampaign, setQrDialogCampaign] = useState<Campaign | null>(null)
 
-  // Allocation form states
+  // selectedCampaign is used for cross-tab navigation: Campaigns "Assign" button → Allocate tab
   const [selectedCampaign, setSelectedCampaign] = useState("")
-  const [selectedCounselor, setSelectedCounselor] = useState("")
-  const [leadsToAllocate, setLeadsToAllocate] = useState("")
 
   // Fetch leads from backend API
   const fetchLeads = async () => {
@@ -599,43 +596,6 @@ export default function AdminLeads() {
     }
   }
 
-  const handleAllocateLeads = async () => {
-    if (!selectedCampaign || !selectedCounselor || !leadsToAllocate) {
-      toast({
-        title: "Error",
-        description: "Please fill all required fields",
-        variant: "destructive",
-      })
-      return
-    }
-
-    try {
-      const allocation = await apiUtils.allocateLeads({
-        campaignId: selectedCampaign,
-        counselorName: selectedCounselor,
-        count: Number.parseInt(leadsToAllocate),
-      })
-
-      setAllocations([...allocations, allocation])
-
-      toast({
-        title: "Leads Allocated",
-        description: `${leadsToAllocate} leads allocated to ${selectedCounselor} successfully`,
-      })
-
-      setAllocateDialogOpen(false)
-      setSelectedCampaign("")
-      setSelectedCounselor("")
-      setLeadsToAllocate("")
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to allocate leads",
-        variant: "destructive",
-      })
-    }
-  }
-
   const getUserAccessLevel = (leadId: string): "owner" | "editor" | "viewer" | "none" => {
     const ownership = leadOwnerships.get(leadId)
     if (ownership && ownership.ownerId === currentUser.id) {
@@ -856,7 +816,7 @@ export default function AdminLeads() {
       fromUserId: currentUser.id,
       fromUserName: currentUser.name,
       toUserId: transferTo,
-      toUserName: counselors.find(c => c.name === transferTo)?.name || transferTo, // Find name from counselors list
+      toUserName: counselorsList.find(c => c.name === transferTo)?.name || transferTo, // Find name from counselors list
       reason: transferReasonType,
       transferDate: new Date().toISOString(),
       transferredBy: currentUser.name,
@@ -865,7 +825,7 @@ export default function AdminLeads() {
 
     const newOwnership: LeadOwnership = {
       ownerId: transferTo,
-      ownerName: counselors.find(c => c.id === transferTo)?.name || transferTo, // Find name using ID
+      ownerName: counselorsList.find(c => c.id === transferTo)?.name || transferTo, // Find name using ID
       assignedDate: new Date().toISOString(),
       assignedBy: currentUser.name
     }
@@ -890,7 +850,7 @@ export default function AdminLeads() {
     if (!existingAccess.some(access => access.userId === transferTo)) {
       const transferredToAccess: LeadAccessControl = {
         userId: transferTo,
-        userName: counselors.find(c => c.id === transferTo)?.name || transferTo, // Find name using ID
+        userName: counselorsList.find(c => c.id === transferTo)?.name || transferTo, // Find name using ID
         accessLevel: "owner", // The new owner has owner level
         grantedDate: new Date().toISOString(),
         grantedBy: "System (Transfer)"
@@ -912,7 +872,7 @@ export default function AdminLeads() {
 
     toast({
       title: "Lead Transferred",
-      description: `Lead transferred to ${counselors.find(c => c.id === transferTo)?.name || transferTo} successfully`,
+      description: `Lead transferred to ${counselorsList.find(c => c.id === transferTo)?.name || transferTo} successfully`,
     })
 
     setTransferDialogOpen(false)
@@ -955,33 +915,9 @@ export default function AdminLeads() {
     assignedLeads: campaigns.reduce((sum, c) => sum + (c.assignedLeads || 0), 0),
     unassignedLeads: campaigns.reduce((sum, c) => sum + (c.unassignedLeads || 0), 0),
     duplicates: campaigns.reduce((sum, c) => sum + (c.duplicateLeads || 0), 0),
-    totalAllocated: allocations.reduce((sum, a) => sum + (a.leadsAllocated || 0), 0),
-    inProgress: allocations.reduce((sum, a) => sum + (a.pending || 0), 0),
-    completed: allocations.reduce((sum, a) => sum + (a.completed || 0), 0),
     totalCalls: callLogs.length,
     connectedCalls: callLogs.filter((c) => c.status === "Connected").length,
     notConnectedCalls: callLogs.filter((c) => c.status === "Not Connected").length,
-  }
-
-  const counselors = [
-    { name: "Vinayak Kumar", activeLeads: 450, performance: 85, id: "U002" },
-    { name: "Priya Sharma", activeLeads: 680, performance: 92, id: "U003" },
-    { name: "Amit Patel", activeLeads: 1200, performance: 78, id: "U004" },
-    { name: "Ravi Kumar", activeLeads: 320, performance: 88, id: "U005" },
-  ]
-
-  const allocationStats = {
-    totalAllocated: allocations.reduce((sum, a) => sum + (a.leadsAllocated || 0), 0),
-    totalContacted: allocations.reduce((sum, a) => sum + (a.leadsContacted || 0), 0),
-    totalConverted: allocations.reduce((sum, a) => sum + (a.leadsConverted || 0), 0),
-    conversionRate:
-      allocations.reduce((sum, a) => sum + (a.leadsAllocated || 0), 0) > 0
-        ? (
-          (allocations.reduce((sum, a) => sum + (a.leadsConverted || 0), 0) /
-            allocations.reduce((sum, a) => sum + (a.leadsAllocated || 0), 0)) *
-          100
-        ).toFixed(1)
-        : "0",
   }
 
   const handleQualifyLead = async () => {
@@ -1273,313 +1209,15 @@ export default function AdminLeads() {
         {/* Allocate Leads Tab */}
         {!isCounselor && (
           <TabsContent value="allocate" className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">Lead Allocation</h2>
-                <p className="text-sm text-gray-600 mt-1">Distribute leads from campaigns to counselors</p>
-              </div>
-              <Dialog open={allocateDialogOpen} onOpenChange={setAllocateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                    <UserCheck className="w-4 h-4 mr-2" />
-                    Allocate Leads
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-lg">
-                  <DialogHeader>
-                    <DialogTitle>Allocate Leads to Counselor</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label>Select Campaign</Label>
-                      <Select value={selectedCampaign} onValueChange={setSelectedCampaign}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select campaign" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {campaigns.map((campaign) => (
-                            <SelectItem key={campaign.id} value={campaign.name}>
-                              {campaign.name} ({(campaign.unassignedLeads || 0).toLocaleString()} available)
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Select Counselor</Label>
-                      <Select value={selectedCounselor} onValueChange={setSelectedCounselor}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select counselor" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {counselors.map((counselor) => (
-                            <SelectItem key={counselor.name} value={counselor.id}> {/* Use counselor.id */}
-                              <div className="flex items-center justify-between w-full">
-                                <span>{counselor.name}</span>
-                                <span className="text-xs text-gray-500 ml-2">
-                                  {counselor.activeLeads} leads • {counselor.performance}% performance
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {selectedCounselor && (
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mt-2">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm font-medium text-gray-900">{counselors.find((c) => c.id === selectedCounselor)?.name}</p>
-                              <p className="text-xs text-gray-600 mt-1">
-                                Current Workload: {counselors.find((c) => c.id === selectedCounselor)?.activeLeads}{" "} {/* Use ID */}
-                                active leads
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-xs text-gray-600">Performance</p>
-                              <p className="text-lg font-bold text-green-600">
-                                {counselors.find((c) => c.id === selectedCounselor)?.performance}% {/* Use ID */}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Number of Leads</Label>
-                      <Input
-                        type="number"
-                        placeholder="e.g., 2000"
-                        value={leadsToAllocate}
-                        onChange={(e) => setLeadsToAllocate(e.target.value)}
-                      />
-                      {leadsToAllocate && selectedCounselor && (
-                        <p className="text-xs text-gray-600">
-                          New workload will be:{" "}
-                          <strong className="text-gray-900">
-                            {(counselors.find((c) => c.id === selectedCounselor)?.activeLeads || 0) + // Use ID
-                              Number.parseInt(leadsToAllocate)}{" "}
-                            leads
-                          </strong>
-                        </p>
-                      )}
-                    </div>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <div className="flex items-start gap-2">
-                        <Activity className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-medium text-blue-900">Smart Allocation</p>
-                          <p className="text-xs text-blue-700 mt-1">
-                            Leads are allocated based on counselor workload, performance, and availability
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" onClick={() => setAllocateDialogOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleAllocateLeads}>
-                        Allocate Leads
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-600 mb-1">Total Allocated</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {(allocationStats.totalAllocated || 0).toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <UserCheck className="w-5 h-5 text-green-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-600 mb-1">In Progress</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {(allocationStats.totalContacted || 0).toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <Activity className="w-5 h-5 text-blue-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-600 mb-1">Completed</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {(allocationStats.totalConverted || 0).toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <CheckCircle2 className="w-5 h-5 text-purple-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Counselor Workload Overview</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {counselors.map((counselor) => (
-                    <div key={counselor.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200"> {/* Use ID */}
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="font-semibold text-gray-900 text-sm">{counselor.name}</p>
-                        <Badge
-                          className={
-                            counselor.activeLeads < 500
-                              ? "bg-green-100 text-green-700"
-                              : counselor.activeLeads < 1000
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-red-100 text-red-700"
-                          }
-                        >
-                          {counselor.activeLeads < 500 ? "Available" : counselor.activeLeads < 1000 ? "Busy" : "Full"}
-                        </Badge>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-gray-600">Active Leads</span>
-                          <span className="font-semibold text-gray-900">{counselor.activeLeads}</span>
-                        </div>
-                        <Progress value={(counselor.activeLeads / 1500) * 100} className="h-2" />
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-gray-600">Performance</span>
-                          <span className="font-semibold text-green-600">{counselor.performance}%</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Counselor
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Campaign
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Allocated
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Completed
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Pending
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Progress
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Date
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {allocations.map((allocation) => {
-                        const progress = (allocation.completed / allocation.allocated) * 100
-                        return (
-                          <tr key={allocation.id} className="hover:bg-gray-50 transition-colors">
-                            <td className="px-4 py-3">
-                              <div>
-                                <p className="font-semibold text-gray-900 text-sm">{allocation.counselor}</p>
-                                <p className="text-xs text-gray-500">
-                                  Current workload: {allocation.currentWorkload} leads
-                                </p>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3">
-                              <p className="text-sm text-gray-900">{allocation.campaign}</p>
-                            </td>
-                            <td className="px-4 py-3">
-                              <p className="text-sm font-semibold text-gray-900">
-                                {(allocation.allocated || 0).toLocaleString()}
-                              </p>
-                            </td>
-                            <td className="px-4 py-3">
-                              <p className="text-sm font-semibold text-green-600">
-                                {(allocation.completed || 0).toLocaleString()}
-                              </p>
-                            </td>
-                            <td className="px-4 py-3">
-                              <p className="text-sm font-semibold text-orange-600">
-                                {(allocation.pending || 0).toLocaleString()}
-                              </p>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="space-y-1">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs font-medium text-gray-700">{progress.toFixed(1)}%</span>
-                                </div>
-                                <Progress value={progress} className="h-2" />
-                              </div>
-                            </td>
-                            <td className="px-4 py-3">
-                              <p className="text-sm text-gray-600">{allocation.dateAllocated}</p>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-8 px-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                                >
-                                  <Eye className="w-4 h-4 mr-1" />
-                                  View
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-8 px-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-                                >
-                                  <ArrowRightLeft className="w-4 h-4 mr-1" />
-                                  Reassign
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
+            <AllocateLeadsTab
+              campaigns={campaigns}
+              totalLeadsCount={totalLeadsCount}
+              initialCampaignName={selectedCampaign}
+            />
           </TabsContent>
         )}
 
-        {/* Call Reporting Tab */}
+                {/* Call Reporting Tab */}
         <TabsContent value="reports" className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
@@ -1660,7 +1298,7 @@ export default function AdminLeads() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs font-medium text-gray-600 mb-1">Conversion</p>
-                    <p className="text-2xl font-bold text-gray-900">{allocationStats.conversionRate}%</p>
+                    <p className="text-2xl font-bold text-gray-900">0%</p>
                   </div>
                   <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
                     <TrendingUp className="w-5 h-5 text-cyan-600" />
@@ -1778,7 +1416,7 @@ export default function AdminLeads() {
                   <SelectValue placeholder="Select counselor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {counselors.map((counselor) => (
+                  {counselorsList.map((counselor) => (
                     <SelectItem key={counselor.id} value={counselor.name}> {/* Use name for display, ID for value if needed elsewhere */}
                       {counselor.name} ({counselor.activeLeads} active leads)
                     </SelectItem>
@@ -2489,7 +2127,7 @@ export default function AdminLeads() {
                   <SelectValue placeholder="Select counselor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {counselors.map((counselor) => (
+                  {counselorsList.map((counselor) => (
                     <SelectItem key={counselor.id} value={counselor.id}> {/* Use ID for value */}
                       {counselor.name}
                     </SelectItem>

@@ -1,0 +1,1 @@
+export { AllocateLeadsTab } from "./AllocateLeadsTab"
